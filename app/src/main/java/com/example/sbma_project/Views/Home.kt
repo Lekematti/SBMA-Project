@@ -79,7 +79,8 @@ fun Home() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(16.dp),
+
+                .padding(top = 300.dp, bottom = 80.dp, start = 16.dp, end = 16.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -100,16 +101,18 @@ fun Home() {
                         .padding(40.dp))
                     Text(text = "S-Length")
                 }
+                Button(
+                    onClick = { /* Handle button click */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                ) {
+                    Text(text = "Start")
+                }
 
             }
+
         }
-        Button(
-            onClick = { /* Handle button click */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(text = "Click Me")
-        }
+
     }
 }
