@@ -1,15 +1,14 @@
 package com.example.sbma_project
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.extension.hasLocationPermission
 import com.example.sbma_project.internetConnection.ConnectionStatus
 import com.example.sbma_project.internetConnection.currentConnectivityStatus
@@ -54,36 +54,32 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
+    private val fitApiHelper by lazy { FitApiHelper(this) }
+
     @OptIn(ExperimentalPermissionsApi::class)
-    @RequiresApi(Build.VERSION_CODES.S)
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val locationViewModel: LocationViewModel by viewModels()
-        val timerViewModel :TimerViewModel by viewModels()
+        val timerViewModel: TimerViewModel by viewModels()
 
         setContent {
             val pathPoints by locationViewModel.pathPoints.collectAsState()
-
             val permissionState = rememberMultiplePermissionsState(
                 permissions = listOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                 )
             )
-
             val viewState by locationViewModel.viewState.collectAsState()
-
-            //check internet connection
             val isConnected = checkConnectivityStatus()
-
 
             SBMAProjectTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
                     LaunchedEffect(!hasLocationPermission()) {
                         permissionState.launchMultiplePermissionRequest()
                     }
@@ -91,10 +87,8 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                         permissionState.allPermissionsGranted -> {
                             locationViewModel.handle(PermissionEvent.Granted)
                         }
-
                         permissionState.shouldShowRationale -> {
-                            RationaleAlert(onDismiss = {
-                            }) {
+                            RationaleAlert(onDismiss = {}) {
                                 permissionState.launchMultiplePermissionRequest()
                             }
                         }
@@ -102,38 +96,36 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                             locationViewModel.handle(PermissionEvent.Revoked)
                         }
                     }
-
                     with(viewState) {
                         when (this) {
                             ViewState.Loading -> {
                                 MainScreen(
                                     "loading",
-                                    settingsActionListener= this@MainActivity,
+                                    settingsActionListener = this@MainActivity,
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
-
-                                    )
+                                )
                             }
-
                             ViewState.RevokedPermissions -> {
                                 MainScreen(
                                     "revoked",
-                                    settingsActionListener= this@MainActivity,
+                                    settingsActionListener = this@MainActivity,
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
-
-                                    )
+                                )
                             }
-
                             is ViewState.Success -> {
                                 MainScreen(
                                     "success",
-                                    LatLng(this.location?.latitude ?: 0.0, this.location?.longitude ?: 0.0),
+                                    LatLng(
+                                        this.location?.latitude ?: 0.0,
+                                        this.location?.longitude ?: 0.0
+                                    ),
                                     rememberCameraPositionState(),
                                     pathPoints = if (locationViewModel.runningState == RunningState.Running) pathPoints else emptyList(),
-                                    settingsActionListener= this@MainActivity,
+                                    settingsActionListener = this@MainActivity,
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
@@ -152,11 +144,26 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
         intent.data = uri
         startActivity(intent)
     }
+
+    @Composable
+    private fun checkConnectivityStatus(): Boolean {
+        val connection by connectivityStatus()
+        return connection != ConnectionStatus.Unavailable
+    }
+
+    @Composable
+    private fun connectivityStatus(): State<ConnectionStatus> {
+        val mContext = LocalContext.current
+        return produceState(initialValue = mContext.currentConnectivityStatus) {
+            mContext.observeConnectivityAsFLow().collect {
+                value = it
+            }
+        }
+    }
 }
 
 @Composable
 fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties()
@@ -187,18 +194,15 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     }
 }
 
-
 @Composable
 fun checkConnectivityStatus(): Boolean {
     val connection by connectivityStatus()
     return connection != ConnectionStatus.Unavailable
 }
-
 @Composable
 fun connectivityStatus(): State<ConnectionStatus> {
     val mContext = LocalContext
         .current
-
     return produceState(
         initialValue = mContext.currentConnectivityStatus
     ) {
@@ -207,8 +211,6 @@ fun connectivityStatus(): State<ConnectionStatus> {
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
