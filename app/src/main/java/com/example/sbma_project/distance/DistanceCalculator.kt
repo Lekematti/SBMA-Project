@@ -4,8 +4,8 @@ import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 
 object DistanceCalculator {
-    fun calculateTotalDistance(pathPoints: List<LatLng>): Float {
-        var totalDistance = 0f
+    fun calculateTotalDistance(pathPoints: List<LatLng>): Double {
+        var totalDistance = 0.0
 
         if (pathPoints.size > 1) {
             for (i in 0 until pathPoints.size - 1) {
@@ -22,10 +22,12 @@ object DistanceCalculator {
                     longitude = endPoint.longitude
                 }
 
-                totalDistance += startLocation.distanceTo(endLocation)
+                // Convert the result to Double
+                totalDistance += startLocation.distanceTo(endLocation).toDouble()
             }
         }
 
-        return totalDistance
+        // Format to keep only one decimal place
+        return String.format("%.1f", totalDistance).replace(',', '.').toDouble()
     }
 }

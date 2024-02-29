@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
@@ -37,8 +38,9 @@ fun RunCard(
     modifier: Modifier,
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
+    distanceViewModel: DistanceViewModel,
     pathPoints: List<LatLng>?,
-    fitApiHelper: FitApiHelper // Pass FitApiHelper as a parameter
+    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
     val time by locationViewModel.time.collectAsState()
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
@@ -96,7 +98,8 @@ fun RunCard(
                 CardDistance(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                    pathPoints = pathPoints
                 )
 
                 // Divider
@@ -121,6 +124,7 @@ fun RunCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+                // Start/stop button
                 Button(
                     onClick = {
 
@@ -128,6 +132,8 @@ fun RunCard(
                             RunningState.Running -> locationViewModel.pauseRun()
                             RunningState.Paused -> locationViewModel.resumeRun()
                             RunningState.Stopped -> locationViewModel.startRun()
+                            RunningState.Paused -> distanceViewModel.pauseDistance()
+                            RunningState.Paused -> distanceViewModel.resumeDistance()
                         }
                     }) {
                     Icon(
@@ -138,6 +144,8 @@ fun RunCard(
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
+
+                //End button
                 Button(
                     onClick = {
                         if (pathPoints != null) {
@@ -145,6 +153,7 @@ fun RunCard(
                         }
                         locationViewModel.resetTime()
                         locationViewModel.finishRun()
+                        distanceViewModel.resetDistance()
                     },
                     enabled = stopButtonEnabled
                 ) {

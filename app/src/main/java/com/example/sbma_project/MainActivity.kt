@@ -41,6 +41,7 @@ import com.example.sbma_project.internetConnection.currentConnectivityStatus
 import com.example.sbma_project.internetConnection.observeConnectivityAsFLow
 import com.example.sbma_project.repository.TimerViewModel
 import com.example.sbma_project.ui.theme.SBMAProjectTheme
+import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.PermissionEvent
 import com.example.sbma_project.viewmodels.RunningState
@@ -55,7 +56,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
     private val fitApiHelper by lazy { FitApiHelper(this) }
-
+    private val distanceViewModel: DistanceViewModel by viewModels()
     @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,7 +106,9 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
-                                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
+                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
+                                    distanceViewModel = distanceViewModel
+
                                 )
                             }
                             ViewState.RevokedPermissions -> {
@@ -115,7 +118,9 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
-                                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
+                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
+                                    distanceViewModel = distanceViewModel
+
                                 )
                             }
                             is ViewState.Success -> {
@@ -131,7 +136,8 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
-                                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
+                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
+                                    distanceViewModel = distanceViewModel
                                 )
                             }
                         }

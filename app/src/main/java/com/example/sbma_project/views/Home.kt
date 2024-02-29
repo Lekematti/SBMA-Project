@@ -30,6 +30,7 @@ import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.repository.TimerViewModel
 import com.example.sbma_project.uiComponents.RunCard
+import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -50,6 +51,7 @@ fun Home(
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
+    distanceViewModel: DistanceViewModel,
 ) {
     var isFirstTime by remember { mutableStateOf(true) } // Track if it's the first time
     Box(
@@ -103,7 +105,8 @@ fun Home(
                             locationViewModel = locationViewModel,
                             timerViewModel = timerViewModel,
                             pathPoints = pathPoints,
-                            fitApiHelper = fitApiHelper // Pass FitApiHelper instance
+                            fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
+                            distanceViewModel = distanceViewModel
                             )
                     }
                 }

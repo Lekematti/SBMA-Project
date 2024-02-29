@@ -26,9 +26,10 @@ fun CardDistance(modifier: Modifier, pathPoints: List<LatLng>?) {
 
     var distanceText by remember { mutableStateOf("Calculating distance...") }
 
+
     if (pathPoints != null) {
         val totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints)
-        distanceText = "Distance walked: ${totalDistance}m"
+        distanceText = "${totalDistance}m"
     }
 
     Box(
@@ -43,12 +44,12 @@ fun CardDistance(modifier: Modifier, pathPoints: List<LatLng>?) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = distanceText,
+                text = "Distance",
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "0.0 km"
+                text = distanceText
             )
         }
     }
