@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.example.sbma_project.database.Timer
 import com.example.sbma_project.repository.TimerViewModel
-
+import org.w3c.dom.Text
 
 @Composable
 fun History(timerViewModel: TimerViewModel) {
@@ -115,3 +115,4 @@ fun History(timerViewModel: TimerViewModel) {
         }
     }
 }
+
