@@ -20,6 +20,13 @@ class LocationViewModel @Inject constructor(
     private val getLocationUseCase: GetLocationUseCase
 ) : ViewModel() {
 
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
+    val viewState = _viewState.asStateFlow()
+
+    // State to hold the list of LatLng points representing the polyline
+    private val _pathPoints: MutableStateFlow<List<LatLng>> = MutableStateFlow(emptyList())
+    val pathPoints = _pathPoints.asStateFlow()
+
     var runningState : RunningState = RunningState.Stopped
         private set
 
@@ -48,6 +55,7 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Stopped
         _stopButtonEnabled.value = false
         locationJob?.cancel()
+        _pathPoints.value = emptyList()
     }
 
     private var locationJob: Job? = null
@@ -85,12 +93,7 @@ class LocationViewModel @Inject constructor(
         _time.value = newTime
     }
 
-    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
-    val viewState = _viewState.asStateFlow()
 
-    // State to hold the list of LatLng points representing the polyline
-    private val _pathPoints: MutableStateFlow<List<LatLng>> = MutableStateFlow(emptyList())
-    val pathPoints = _pathPoints.asStateFlow()
 
 
     fun handle(event: PermissionEvent) {
