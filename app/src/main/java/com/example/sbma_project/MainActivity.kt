@@ -105,6 +105,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
+                                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
                                 )
                             }
                             ViewState.RevokedPermissions -> {
@@ -114,6 +115,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
+                                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
                                 )
                             }
                             is ViewState.Success -> {
@@ -129,6 +131,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
+                                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
                                 )
                             }
                         }

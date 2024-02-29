@@ -1,7 +1,6 @@
 package com.example.sbma_project.views
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.repository.TimerViewModel
 import com.example.sbma_project.uiComponents.RunCard
@@ -49,9 +49,9 @@ fun Home(
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
+    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
     var isFirstTime by remember { mutableStateOf(true) } // Track if it's the first time
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -103,6 +103,7 @@ fun Home(
                             locationViewModel = locationViewModel,
                             timerViewModel = timerViewModel,
                             pathPoints = pathPoints,
+                            fitApiHelper = fitApiHelper // Pass FitApiHelper instance
                             )
                     }
                 }

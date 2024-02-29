@@ -1,72 +1,124 @@
 package com.example.sbma_project.APIHelper
 
 import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
+import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.fitness.request.DataReadRequest
-import com.google.android.gms.tasks.Task
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
-import com.google.android.gms.fitness.FitnessOptions.builder
-import com.google.android.gms.fitness.*
-
 
 class FitApiHelper(private val activity: Activity) {
 
-    private val fitnessOptions: FitnessOptions by lazy {
-        builder()
-            .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
-            .build()
+    private val fitnessOptions = FitnessOptions.builder()
+        .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+        .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+        .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
+        .build()
+
+    private val account: GoogleSignInAccount by lazy {
+        GoogleSignIn.getAccountForExtension(activity, fitnessOptions)
     }
 
-    private val googleSignInClient: GoogleSignInClient by lazy {
-        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestScopes(fitnessOptions.scope)
-            .build()
-        GoogleSignIn.getClient(activity, options)
+    private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1 // You need to define this
+
+    init {
+        checkAndRequestPermissions()
     }
 
-    fun signIn() {
-        val signInIntent = googleSignInClient.signInIntent
-        activity.startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN)
-    }
-
-    fun handleSignInResult(task: Task<GoogleSignInAccount>) {
-        try {
-            val account = task.getResult(ApiException::class.java)
-            // Signed in successfully, you can now access Google Fit API
-            // Call a function to request and retrieve heart rate data
-        } catch (e: ApiException) {
-            // Handle sign-in failure (e.g., user denied access)
+    private fun checkAndRequestPermissions() {
+        if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
+            GoogleSignIn.requestPermissions(
+                activity,
+                GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
+                account,
+                fitnessOptions
+            )
+        } else {
+            accessGoogleFit()
         }
     }
 
-    fun readHeartRateData() {
-        val end = System.currentTimeMillis()
-        val start = end - 86400000 // 1 day in milliseconds
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                when (requestCode) {
+                    GOOGLE_FIT_PERMISSIONS_REQUEST_CODE -> accessGoogleFit()
+                    else -> {
+                        // Result wasn't from Google Fit
+                    }
+                }
+            }
+            else -> {
+                // Permission not granted
+                Log.d("Permission", "No permission")
+            }
+        }
+    }
 
-        val response = GoogleSignIn.getLastSignedInAccount(activity)?.let {
+    suspend fun readHeartRateData(): Float? {
+        val end = LocalDateTime.now()
+        val start = end.minusYears(1)
+        val endSeconds = end.atZone(ZoneId.systemDefault()).toEpochSecond()
+        val startSeconds = start.atZone(ZoneId.systemDefault()).toEpochSecond()
+
+        val responseTask = GoogleSignIn.getLastSignedInAccount(activity)?.let {
             Fitness.getHistoryClient(activity, it)
                 .readData(
                     DataReadRequest.Builder()
-                        .read(DataType.TYPE_HEART_RATE_BPM)
-                        .setTimeRange(start, end, TimeUnit.MILLISECONDS)
+                        .aggregate(DataType.TYPE_HEART_RATE_BPM)
+                        .setTimeRange(startSeconds, endSeconds, TimeUnit.SECONDS)
+                        .bucketByTime(1, TimeUnit.DAYS)
                         .build()
                 )
         }
-        // Handle the response to get heart rate data
-        response?.addOnSuccessListener {
-            // Use dataReadResult to access heart rate data
-            // dataReadResult.getDataSets() //will contain the heart rate values
+
+        return try {
+            responseTask?.addOnSuccessListener { response ->
+                // Use response data here
+                val dataSet = response.getDataSet(DataType.TYPE_HEART_RATE_BPM)
+                val dataPoint = dataSet.dataPoints.lastOrNull()
+                dataPoint?.getValue(Field.FIELD_BPM)?.asFloat()
+            }?.addOnFailureListener { e ->
+                Log.e(TAG, "Error reading heart rate data", e)
+                null
+            }
+            null // Return null as the result is handled asynchronously
+        } catch (e: Exception) {
+            Log.e(TAG, "Error reading heart rate data", e)
+            null
         }
     }
 
+
+    private fun accessGoogleFit() {
+        val end = LocalDateTime.now()
+        val start = end.minusYears(1)
+        val endSeconds = end.atZone(ZoneId.systemDefault()).toEpochSecond()
+        val startSeconds = start.atZone(ZoneId.systemDefault()).toEpochSecond()
+
+        val readRequest = DataReadRequest.Builder()
+            .aggregate(DataType.AGGREGATE_STEP_COUNT_DELTA)
+            .setTimeRange(startSeconds, endSeconds, TimeUnit.SECONDS)
+            .bucketByTime(1, TimeUnit.DAYS)
+            .build()
+
+        Fitness.getHistoryClient(activity, account)
+            .readData(readRequest)
+            .addOnSuccessListener {
+                // Use response data here
+                Log.i(TAG, "OnSuccess()")
+            }
+            .addOnFailureListener { e -> Log.d(TAG, "OnFailure()", e) }
+    }
+
     companion object {
-        const val REQUEST_CODE_SIGN_IN = 123
+        const val TAG = "FitApiHelper"
     }
 }

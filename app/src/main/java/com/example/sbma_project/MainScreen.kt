@@ -19,6 +19,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.repository.TimerViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -36,6 +37,7 @@ fun MainScreen(
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
+    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
     val navController = rememberNavController()
     Scaffold(
@@ -54,6 +56,7 @@ fun MainScreen(
                 isConnected = isConnected,
                 locationViewModel = locationViewModel,
                 timerViewModel = timerViewModel,
+                fitApiHelper = fitApiHelper // Pass FitApiHelper instance
                 )
         }
     }
