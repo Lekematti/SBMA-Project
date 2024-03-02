@@ -15,11 +15,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+
 @RequiresApi(Build.VERSION_CODES.S)
 @HiltViewModel
 class LocationViewModel @Inject constructor(
-    private val getLocationUseCase: GetLocationUseCase
-) : ViewModel() {
+    private val getLocationUseCase: GetLocationUseCase,
+) : ViewModel(){
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
@@ -31,7 +32,6 @@ class LocationViewModel @Inject constructor(
     // Variable to keep the total distance that can be observed from UI
     private var totalDistance = 0.0
     private var isDistanceUpdateEnabled = true // Flag to control distance updates
-
 
     private fun calculateDistance() {
         totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints.value)
@@ -94,6 +94,7 @@ class LocationViewModel @Inject constructor(
 
     private var locationJob: Job? = null
     // Modify the existing startLocationUpdates method to update pathPoints
+
     private fun startLocationUpdates() {
         if (runningState != RunningState.Paused) {
             locationJob?.cancel()
@@ -127,9 +128,6 @@ class LocationViewModel @Inject constructor(
     fun updateTime(newTime: Long) {
         _time.value = newTime
     }
-
-
-
 
     fun handle(event: PermissionEvent) {
         when (event) {

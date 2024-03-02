@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                 permissions = listOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.POST_NOTIFICATIONS
                 )
             )
             val viewState by locationViewModel.viewState.collectAsState()

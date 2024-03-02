@@ -1,5 +1,6 @@
 package com.example.sbma_project.uiComponents
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,11 +45,14 @@ import androidx.compose.ui.unit.sp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.services.RunningService
 //import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
+
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -64,7 +69,7 @@ fun RunCard(
     val time by locationViewModel.time.collectAsState()
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
     var enteredText by remember { mutableStateOf("") }
-
+    val context = LocalContext.current
 
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
@@ -73,7 +78,6 @@ fun RunCard(
         locationViewModel.resetTime()
         locationViewModel.resetPathPoints()
     }
-
 
     Box(
         modifier = modifier,
@@ -110,7 +114,6 @@ fun RunCard(
                         .weight(1f)
                         .fillMaxHeight()
                 )
-
             }
 
             CustomDivider(vertical = false)
@@ -157,7 +160,10 @@ fun RunCard(
                 // Start/stop button
                 Button(
                     onClick = {
-
+                        Intent(context, RunningService::class.java).also {
+                            it.action = RunningService.Actions.START.toString()
+                            context.startService(it)
+                        }
                         when (locationViewModel.runningState) {
                             RunningState.Running -> locationViewModel.pauseRun()
                             RunningState.Paused -> locationViewModel.resumeRun()
@@ -178,6 +184,10 @@ fun RunCard(
                 //End button
                 Button(
                     onClick = {
+                        Intent(context, RunningService::class.java).also {
+                            it.action = RunningService.Actions.STOP.toString()
+                            context.startService(it)
+                        }
                         locationViewModel.finishRun()
                         showDialog = true
                         locationViewModel.resetDistance()
@@ -200,11 +210,13 @@ fun RunCard(
                     },
                     modifier = Modifier.fillMaxWidth(),
 
-                    title = { Text(
-                        "Save your run.",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) },
+                    title = {
+                        Text(
+                            "Save your run.",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
                     text = {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -268,9 +280,16 @@ fun RunCard(
                     confirmButton = {
                         Button(
                             onClick = {
-                                val rating = if (selectedEmoji.isEmpty()) null else emojiToRating(selectedEmoji).value
+                                val rating = if (selectedEmoji.isEmpty()) null else emojiToRating(
+                                    selectedEmoji
+                                ).value
                                 if (pathPoints != null) {
-                                    timerViewModel.createTimer(time, pathPoints, rating, enteredText)
+                                    timerViewModel.createTimer(
+                                        time,
+                                        pathPoints,
+                                        rating,
+                                        enteredText
+                                    )
                                 }
                                 resetStateAndHideDialog()
                             },
@@ -344,6 +363,7 @@ sealed class Rating(val value: Int) {
     data object Good : Rating(4)
     data object VeryGood : Rating(5)
 }
+
 fun emojiToRating(emoji: String): Rating {
     return when (emoji) {
         "😞" -> Rating.VeryBad
