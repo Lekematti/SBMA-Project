@@ -1,3 +1,4 @@
+/*
 package com.example.sbma_project.viewmodels
 
 import androidx.lifecycle.ViewModel
@@ -44,4 +45,4 @@ class DistanceViewModel : ViewModel() {
             calculateDistance()
         }
     }
-}
+}*/

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.repository.TimerViewModel
-import com.example.sbma_project.viewmodels.DistanceViewModel
+//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
@@ -38,7 +38,7 @@ fun RunCard(
     modifier: Modifier,
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
-    distanceViewModel: DistanceViewModel,
+    //distanceViewModel: DistanceViewModel,
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
@@ -132,8 +132,8 @@ fun RunCard(
                             RunningState.Running -> locationViewModel.pauseRun()
                             RunningState.Paused -> locationViewModel.resumeRun()
                             RunningState.Stopped -> locationViewModel.startRun()
-                            RunningState.Paused -> distanceViewModel.pauseDistance()
-                            RunningState.Paused -> distanceViewModel.resumeDistance()
+                            RunningState.Paused -> locationViewModel.pauseDistance()
+                            RunningState.Paused -> locationViewModel.resumeDistance()
                         }
                     }) {
                     Icon(
@@ -153,7 +153,7 @@ fun RunCard(
                         }
                         locationViewModel.resetTime()
                         locationViewModel.finishRun()
-                        distanceViewModel.resetDistance()
+                        locationViewModel.resetDistance()
                     },
                     enabled = stopButtonEnabled
                 ) {
