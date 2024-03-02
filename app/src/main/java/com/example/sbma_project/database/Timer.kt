@@ -21,6 +21,8 @@ data class Timer(
     val id: Long = 0,
     val durationInMillis: Long = 0L,
     val routePath : List<LatLng>?,
+    val rating : Int?,
+    val notes : String?,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date,

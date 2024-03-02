@@ -55,7 +55,10 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Stopped
         _stopButtonEnabled.value = false
         locationJob?.cancel()
+    }
+    fun resetPathPoints(){
         _pathPoints.value = emptyList()
+
     }
 
     private var locationJob: Job? = null

@@ -28,10 +28,10 @@ class TimerViewModel @Inject constructor(private val timerRepository: TimerRepos
     ViewModel() {
     val timers: LiveData<List<Timer>> = timerRepository.getAllTimers()
 
-    fun createTimer(startTime: Long, routePath: List<LatLng>) {
+    fun createTimer(startTime: Long, routePath: List<LatLng>, rating : Int? = null, notes : String? = null) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
-            val newTimer = Timer(durationInMillis = startTime, routePath = routePath, createdAt = currentTimestamp, modifiedAt = null)
+            val newTimer = Timer(durationInMillis = startTime, routePath = routePath, createdAt = currentTimestamp, modifiedAt = null, rating = rating, notes = notes)
             viewModelScope.launch {
                 timerRepository.insertTimer(newTimer)
             }
