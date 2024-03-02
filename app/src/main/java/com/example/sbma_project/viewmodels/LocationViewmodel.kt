@@ -88,7 +88,6 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Stopped
         _stopButtonEnabled.value = false
     }
-
     fun updateTime(newTime: Long) {
         _time.value = newTime
     }

@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.views.History
 import com.example.sbma_project.views.Home
@@ -25,8 +27,11 @@ fun BottomNavGraph(
     settingsActionListener: SettingsActionListener,
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
-    timerViewModel: TimerViewModel
-) {
+    timerViewModel: TimerViewModel,
+    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
+    distanceViewModel: DistanceViewModel,
+
+    ) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Home.route,
@@ -40,7 +45,9 @@ fun BottomNavGraph(
                 isConnected = isConnected,
                 locationViewModel = locationViewModel,
                 timerViewModel = timerViewModel,
-                )
+                fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
+                distanceViewModel = distanceViewModel
+            )
         }
         composable(route = BottomBarScreen.History.route) {
             History(

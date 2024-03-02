@@ -30,6 +30,7 @@ import com.example.sbma_project.database.Timer
 import com.example.sbma_project.repository.TimerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.w3c.dom.Text
 
 
 @Composable
@@ -117,6 +118,7 @@ fun History(timerViewModel: TimerViewModel) {
         }
     }
 }
+
 
 private fun formatDate(date: Date): String {
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
