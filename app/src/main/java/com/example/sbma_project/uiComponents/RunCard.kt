@@ -2,27 +2,44 @@ package com.example.sbma_project.uiComponents
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.repository.TimerViewModel
@@ -42,8 +59,21 @@ fun RunCard(
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedEmoji by remember { mutableStateOf("") }
     val time by locationViewModel.time.collectAsState()
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
+    var enteredText by remember { mutableStateOf("") }
+
+
+    fun resetStateAndHideDialog() {
+        selectedEmoji = ""
+        enteredText = ""
+        showDialog = false
+        locationViewModel.resetTime()
+        locationViewModel.resetPathPoints()
+    }
+
 
     Box(
         modifier = modifier,
@@ -148,11 +178,8 @@ fun RunCard(
                 //End button
                 Button(
                     onClick = {
-                        if (pathPoints != null) {
-                            timerViewModel.createTimer(time, pathPoints)
-                        }
-                        locationViewModel.resetTime()
                         locationViewModel.finishRun()
+                        showDialog = true
                         locationViewModel.resetDistance()
                     },
                     enabled = stopButtonEnabled
@@ -163,6 +190,110 @@ fun RunCard(
                     )
                 }
             }
+
+            // Modal Dialog
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // Hide the modal when dismissed
+                        resetStateAndHideDialog()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+
+                    title = { Text(
+                        "Save your run.",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) },
+                    text = {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(text = "How do you feel after running?")
+                                Spacer(modifier = Modifier.height(4.dp))
+                                // Row of emojis
+                                Row(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    EmojiButton("😞", isSelected = selectedEmoji == "😞") {
+                                        selectedEmoji = "😞"
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    EmojiButton("😐", isSelected = selectedEmoji == "😐") {
+                                        selectedEmoji = "😐"
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    EmojiButton("😊", isSelected = selectedEmoji == "😊") {
+                                        selectedEmoji = "😊"
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    EmojiButton("😃", isSelected = selectedEmoji == "😃") {
+                                        selectedEmoji = "😃"
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    EmojiButton("😄", isSelected = selectedEmoji == "😄") {
+                                        selectedEmoji = "😄"
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                // Text field for notes
+                                Text(text = "Write private notes here.")
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                TextField(
+                                    value = enteredText,
+                                    onValueChange = { enteredText = it },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    maxLines = 4
+                                )
+                            }
+
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val rating = if (selectedEmoji.isEmpty()) null else emojiToRating(selectedEmoji).value
+                                if (pathPoints != null) {
+                                    timerViewModel.createTimer(time, pathPoints, rating, enteredText)
+                                }
+                                resetStateAndHideDialog()
+                            },
+                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
+                            Text("Save")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                resetStateAndHideDialog()
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(),
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
+                            Text("Discard")
+                        }
+                    }
+                )
+            }
+
         }
         LaunchedEffect(locationViewModel.runningState == RunningState.Running) {
             while (locationViewModel.runningState == RunningState.Running) {
@@ -187,5 +318,43 @@ fun CustomDivider(vertical: Boolean) {
                 .height(1.dp)
     )
 }
+
+@Composable
+fun EmojiButton(
+    emoji: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+            .background(if (isSelected) Color.Gray else Color.Transparent),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(emoji, fontSize = 28.sp, modifier = Modifier.align(Alignment.Center))
+    }
+}
+
+sealed class Rating(val value: Int) {
+    data object VeryBad : Rating(1)
+    data object Bad : Rating(2)
+    data object Neutral : Rating(3)
+    data object Good : Rating(4)
+    data object VeryGood : Rating(5)
+}
+fun emojiToRating(emoji: String): Rating {
+    return when (emoji) {
+        "😞" -> Rating.VeryBad
+        "😐" -> Rating.Bad
+        "😊" -> Rating.Neutral
+        "😃" -> Rating.Good
+        "😄" -> Rating.VeryGood
+        else -> throw IllegalArgumentException("Invalid emoji")
+    }
+}
+
+
 
 
