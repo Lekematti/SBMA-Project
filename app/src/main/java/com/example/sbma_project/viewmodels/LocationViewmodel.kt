@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sbma_project.distance.DistanceCalculator
 import com.example.sbma_project.domain.GetLocationUseCase
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,36 @@ class LocationViewModel @Inject constructor(
     // State to hold the list of LatLng points representing the polyline
     private val _pathPoints: MutableStateFlow<List<LatLng>> = MutableStateFlow(emptyList())
     val pathPoints = _pathPoints.asStateFlow()
+
+    // Variable to keep the total distance that can be observed from UI
+    private var totalDistance = 0.0
+    private var isDistanceUpdateEnabled = true // Flag to control distance updates
+
+
+    private fun calculateDistance() {
+        totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints.value)
+    }
+
+    fun resumeDistance() {
+        isDistanceUpdateEnabled = true
+        updateDistance()
+    }
+
+    fun pauseDistance() {
+        isDistanceUpdateEnabled = false
+    }
+
+    fun resetDistance() {
+        totalDistance = 0.0
+        _pathPoints.value = emptyList()
+    }
+
+    // Modify the existing updateDistance method to call calculateDistance
+    private fun updateDistance() {
+        if (isDistanceUpdateEnabled) {
+            calculateDistance()
+        }
+    }
 
     var runningState : RunningState = RunningState.Stopped
         private set
@@ -62,6 +93,7 @@ class LocationViewModel @Inject constructor(
     }
 
     private var locationJob: Job? = null
+    // Modify the existing startLocationUpdates method to update pathPoints
     private fun startLocationUpdates() {
         if (runningState != RunningState.Paused) {
             locationJob?.cancel()
@@ -75,6 +107,7 @@ class LocationViewModel @Inject constructor(
                 // If the user is currently running, update pathPoints with new location
                 if (runningState == RunningState.Running) {
                     _pathPoints.value = _pathPoints.value + (location ?: LatLng(0.00, 0.00))
+                    updateDistance()
                 }
             }
         }
@@ -91,7 +124,6 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Stopped
         _stopButtonEnabled.value = false
     }
-
     fun updateTime(newTime: Long) {
         _time.value = newTime
     }
@@ -127,8 +159,3 @@ sealed class RunningState {
     data object Paused : RunningState()
     data object Stopped : RunningState()
 }
-
-
-
-
-

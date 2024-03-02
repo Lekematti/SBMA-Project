@@ -5,6 +5,8 @@
     <!--INTERNET USAGE PERMISSION -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!--SENSOR PERMISSION-->
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
 
     <!--LOCATION PERMISSIONS -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
