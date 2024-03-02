@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Run::class, Timer::class],
-    version = 3
+    version = 6
 )
 @TypeConverters(Converters::class)
 abstract class RunDatabase: RoomDatabase() {
