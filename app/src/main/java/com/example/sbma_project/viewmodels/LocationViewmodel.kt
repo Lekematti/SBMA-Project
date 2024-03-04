@@ -1,6 +1,7 @@
 package com.example.sbma_project.viewmodels
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -128,6 +129,7 @@ class LocationViewModel @Inject constructor(
                 if (runningState == RunningState.Running) {
                     if (locationWithSpeed != null) {
                         _pathPoints.value = _pathPoints.value + (locationWithSpeed.location ?: LatLng(0.00, 0.00))
+                        Log.d("locationSpeed", "${locationWithSpeed.location}")
                         _speed.value = (locationWithSpeed.speed * 3.6f).toBigDecimal()
                             .setScale(2, RoundingMode.HALF_UP).toFloat()
 

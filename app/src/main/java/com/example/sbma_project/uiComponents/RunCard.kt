@@ -2,6 +2,7 @@ package com.example.sbma_project.uiComponents
 
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -73,6 +74,8 @@ fun RunCard(
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    Log.d("RunCardPoints","$pathPoints")
+
  /*   val averageSpeed = locationViewModel.averageSpeed // Retrieve the average speed from LocationViewModel
 
     LaunchedEffect(locationViewModel.runningState) {
@@ -92,7 +95,6 @@ fun RunCard(
         enteredText = ""
         showDialog = false
         locationViewModel.resetTime()
-        locationViewModel.resetPathPoints()
     }
 
     Box(
