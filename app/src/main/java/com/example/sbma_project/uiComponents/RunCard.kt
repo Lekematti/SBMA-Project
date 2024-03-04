@@ -157,7 +157,7 @@ fun RunCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                // Start/stop button
+                // Start/pause button
                 Button(
                     onClick = {
                         Intent(context, RunningService::class.java).also {
@@ -170,6 +170,7 @@ fun RunCard(
                             RunningState.Stopped -> locationViewModel.startRun()
                             RunningState.Paused -> locationViewModel.pauseDistance()
                             RunningState.Paused -> locationViewModel.resumeDistance()
+                            else -> {}
                         }
                     }) {
                     Icon(
