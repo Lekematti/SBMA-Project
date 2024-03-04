@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ILocationService {
 
-    fun requestLocationUpdates(): Flow<LatLng?>
+    fun requestLocationUpdates(): Flow<LocationWithSpeed?>
 
-    fun requestCurrentLocation(): Flow<LatLng?>
+    fun requestCurrentLocation(): Flow<LocationWithSpeed?>
 }
