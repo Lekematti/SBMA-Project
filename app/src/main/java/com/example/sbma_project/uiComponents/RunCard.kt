@@ -95,6 +95,9 @@ fun RunCard(
         enteredText = ""
         showDialog = false
         locationViewModel.resetTime()
+        locationViewModel.resetPathPoints()
+        locationViewModel.resetDistance()
+
     }
 
     Box(
@@ -226,7 +229,6 @@ fun RunCard(
 
                         locationViewModel.finishRun()
                         showDialog = true
-                        locationViewModel.resetDistance()
                     },
                     enabled = stopButtonEnabled
                 ) {
