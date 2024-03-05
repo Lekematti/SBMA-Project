@@ -2,7 +2,6 @@ package com.example.sbma_project.uiComponents
 
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -47,7 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.distance.DistanceCalculator
-import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.services.RunningService
 //import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
@@ -62,7 +61,7 @@ import kotlinx.coroutines.delay
 fun RunCard(
     modifier: Modifier,
     locationViewModel: LocationViewModel,
-    timerViewModel: TimerViewModel,
+    runViewModel: RunViewModel,
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
@@ -305,7 +304,7 @@ fun RunCard(
                                     selectedEmoji
                                 ).value
                                 if (pathPoints != null) {
-                                    timerViewModel.createTimer(
+                                    runViewModel.createRun(
                                         time,
                                         pathPoints,
                                         rating,

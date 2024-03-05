@@ -1,10 +1,9 @@
-package com.example.sbma_project.data
+package com.example.sbma_project.locationData
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.sbma_project.extension.hasLocationPermission
 import com.google.android.gms.location.FusedLocationProviderClient

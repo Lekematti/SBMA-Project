@@ -1,6 +1,5 @@
-package com.example.sbma_project.data
+package com.example.sbma_project.locationData
 
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.Flow
 
 interface ILocationService {

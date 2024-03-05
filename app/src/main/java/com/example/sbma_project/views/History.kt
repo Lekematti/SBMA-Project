@@ -37,26 +37,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.sbma_project.database.Timer
-import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.database.Run
+import com.example.sbma_project.repository.RunViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 
 @Composable
-fun History(timerViewModel: TimerViewModel) {
-    val timersState = remember { mutableStateOf<List<Timer>>(emptyList()) }
+fun History(runViewModel: RunViewModel) {
+    val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryData by remember { mutableStateOf("") }
 
     val showDialog = remember { mutableStateOf(false) }
-    val timerIdToDelete = remember { mutableLongStateOf(-1L) }
+    val runIdToDelete = remember { mutableLongStateOf(-1L) }
 
 
 
-    LaunchedEffect(key1 = timerViewModel.timers) {
-        timerViewModel.timers.observeForever { timers ->
-            timersState.value = timers
+    LaunchedEffect(key1 = runViewModel.runs) {
+        runViewModel.runs.observeForever { runs ->
+            runsState.value = runs
         }
     }
 
@@ -79,13 +80,13 @@ fun History(timerViewModel: TimerViewModel) {
             }
             // run stats items
             LazyColumn {
-                items(timersState.value) { timer ->
+                items(runsState.value) { runs ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .clickable {
-                                selectedHistoryData = "This has history data in it for item $timer"
+                                selectedHistoryData = "This has history data in it for item $runs"
                                 showDetailView = true
                             }
                     ) {
@@ -98,13 +99,13 @@ fun History(timerViewModel: TimerViewModel) {
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
-                                    text = "ID: ${timer.id}",
+                                    text = "ID: ${runs.id}",
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(onClick = {
                                     showDeleteConfirmationDialog(
-                                        timer.id,
-                                        timerIdToDelete,
+                                        runs.id,
+                                        runIdToDelete,
                                         showDialog
                                     )
                                 }
@@ -118,9 +119,9 @@ fun History(timerViewModel: TimerViewModel) {
                             Spacer(modifier = Modifier.height(8.dp))
 
 
-                            Text(text = "Duration: ${timer.durationInMillis}s")
-                            Text(text = "route LatLng size: ${timer.routePath?.size}")
-                            Text(text = "Created at: ${formatDate(timer.createdAt)}")
+                            Text(text = "Duration: ${runs.durationInMillis}s")
+                            Text(text = "route LatLng size: ${runs.routePath?.size}")
+                            Text(text = "Created at: ${formatDate(runs.createdAt)}")
                         }
                     }
                 }
@@ -173,11 +174,11 @@ fun History(timerViewModel: TimerViewModel) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
                 title = { Text("Confirm Deletion") },
-                text = { Text("Are you sure you want to delete this timer?") },
+                text = { Text("Are you sure you want to delete this run?") },
                 confirmButton = {
                     Button(
                         onClick = {
-                            timerViewModel.deleteTimerById(timerIdToDelete.value)
+                            runViewModel.deleteRunById(runIdToDelete.longValue)
                             showDialog.value = false
                         },
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
@@ -211,7 +212,7 @@ fun showDeleteConfirmationDialog(
 
 
 private fun formatDate(date: Date): String {
-    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
     return formatter.format(date)
 }
 

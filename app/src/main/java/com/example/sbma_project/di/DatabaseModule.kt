@@ -3,7 +3,7 @@ package com.example.sbma_project.di
 import android.content.Context
 import androidx.room.Room
 import com.example.sbma_project.database.RunDatabase
-import com.example.sbma_project.database.TimerDao
+import com.example.sbma_project.database.RunDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +20,7 @@ object DatabaseModule {
             .build()
     }
     @Provides
-    fun provideTimerDao(runDatabase: RunDatabase): TimerDao {
-        return runDatabase.timerDao()
+    fun provideTimerDao(runDatabase: RunDatabase): RunDao {
+        return runDatabase.runDao()
     }
 }

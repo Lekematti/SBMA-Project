@@ -39,7 +39,7 @@ import com.example.sbma_project.extension.hasLocationPermission
 import com.example.sbma_project.internetConnection.ConnectionStatus
 import com.example.sbma_project.internetConnection.currentConnectivityStatus
 import com.example.sbma_project.internetConnection.observeConnectivityAsFLow
-import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.ui.theme.SBMAProjectTheme
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.PermissionEvent
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
         super.onCreate(savedInstanceState)
 
         val locationViewModel: LocationViewModel by viewModels()
-        val timerViewModel: TimerViewModel by viewModels()
+        val runViewModel: RunViewModel by viewModels()
 
         setContent {
             val pathPoints by locationViewModel.pathPoints.collectAsState()
@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     settingsActionListener = this@MainActivity,
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
-                                    timerViewModel = timerViewModel,
+                                    runViewModel = runViewModel,
                                     fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
                                     //distanceViewModel = distanceViewModel
                                 )
@@ -116,7 +116,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     settingsActionListener = this@MainActivity,
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
-                                    timerViewModel = timerViewModel,
+                                    runViewModel = runViewModel,
                                     fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
                                     //distanceViewModel = distanceViewModel
                                 )
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     settingsActionListener = this@MainActivity,
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
-                                    timerViewModel = timerViewModel,
+                                    runViewModel = runViewModel,
                                     fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
                                     //distanceViewModel = distanceViewModel
                                 )

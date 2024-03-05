@@ -43,7 +43,7 @@ fun CardTime(modifier: Modifier, locationViewModel: LocationViewModel) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${formatTime(time)}"
+                text = formatTime(time)
             )
         }
     }

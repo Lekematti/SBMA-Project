@@ -2,9 +2,8 @@ package com.example.sbma_project.domain
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.sbma_project.data.ILocationService
-import com.example.sbma_project.data.LocationWithSpeed
-import com.google.android.gms.maps.model.LatLng
+import com.example.sbma_project.locationData.ILocationService
+import com.example.sbma_project.locationData.LocationWithSpeed
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

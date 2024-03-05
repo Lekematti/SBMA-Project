@@ -1,8 +1,8 @@
 package com.example.sbma_project.di
 
 import android.content.Context
-import com.example.sbma_project.data.ILocationService
-import com.example.sbma_project.data.LocationService
+import com.example.sbma_project.locationData.ILocationService
+import com.example.sbma_project.locationData.LocationService
 import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
