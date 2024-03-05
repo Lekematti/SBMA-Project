@@ -39,6 +39,9 @@ interface TimerDao {
     @Query("SELECT * FROM timers")
     fun getAllTimers(): LiveData<List<Timer>>
 
+    @Query("DELETE FROM timers WHERE id = :timerId")
+    suspend fun deleteTimerById(timerId: Long)
+
 }
 
 object Converters {

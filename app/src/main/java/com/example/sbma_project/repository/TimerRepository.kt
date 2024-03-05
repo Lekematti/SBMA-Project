@@ -21,6 +21,10 @@ class TimerRepository @Inject constructor(private val timerDao: TimerDao) {
     fun getAllTimers(): LiveData<List<Timer>> {
         return timerDao.getAllTimers()
     }
+
+    suspend fun deleteTimerById(timerId: Long) {
+        timerDao.deleteTimerById(timerId)
+    }
 }
 
 @HiltViewModel
@@ -35,6 +39,12 @@ class TimerViewModel @Inject constructor(private val timerRepository: TimerRepos
             viewModelScope.launch {
                 timerRepository.insertTimer(newTimer)
             }
+        }
+    }
+
+    fun deleteTimerById(timerId: Long) {
+        viewModelScope.launch {
+            timerRepository.deleteTimerById(timerId)
         }
     }
 

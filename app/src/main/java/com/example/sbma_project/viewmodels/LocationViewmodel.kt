@@ -100,8 +100,6 @@ class LocationViewModel @Inject constructor(
         totalTimeInHours = time.value / 3600f
         resetTime()
         _speed.value = 0f
-
-
     }
 
 
