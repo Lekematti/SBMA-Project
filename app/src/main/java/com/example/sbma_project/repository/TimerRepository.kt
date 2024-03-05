@@ -8,6 +8,7 @@ import com.example.sbma_project.database.TimerDao
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 
@@ -27,10 +28,13 @@ class TimerViewModel @Inject constructor(private val timerRepository: TimerRepos
     ViewModel() {
     val timers: LiveData<List<Timer>> = timerRepository.getAllTimers()
 
-    fun createTimer(startTime: Long, routePath: List<LatLng>) {
+    fun createTimer(startTime: Long, routePath: List<LatLng>, rating : Int? = null, notes : String? = null) {
         viewModelScope.launch {
-            val newTimer = Timer(durationInMillis = startTime, routePath = routePath)
-            timerRepository.insertTimer(newTimer)
+            val currentTimestamp = Date() // Get current date and time
+            val newTimer = Timer(durationInMillis = startTime, routePath = routePath, createdAt = currentTimestamp, modifiedAt = null, rating = rating, notes = notes)
+            viewModelScope.launch {
+                timerRepository.insertTimer(newTimer)
+            }
         }
     }
 

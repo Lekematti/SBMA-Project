@@ -28,6 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.example.sbma_project.database.Timer
 import com.example.sbma_project.repository.TimerViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import org.w3c.dom.Text
 
 
 @Composable
@@ -60,7 +63,6 @@ fun History(timerViewModel: TimerViewModel) {
             LazyColumn {
                 items(timersState.value) { timer ->
                     Card(
-
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
@@ -73,6 +75,7 @@ fun History(timerViewModel: TimerViewModel) {
                         Text(text = "ID: ${timer.id}")
                         Text(text = "Duration: ${timer.durationInMillis}s")
                         Text(text = "route LatLng size: ${timer.routePath?.size}")
+                        Text(text = "Created at: ${formatDate(timer.createdAt)}")
                     }
                 }
             }
@@ -114,4 +117,10 @@ fun History(timerViewModel: TimerViewModel) {
             }
         }
     }
+}
+
+
+private fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    return formatter.format(date)
 }

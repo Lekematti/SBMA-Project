@@ -5,6 +5,7 @@ plugins {
     id("kotlin-kapt")
     id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id ("com.google.dagger.hilt.android")
+    //id ("com.google.gms.google-services") // not needed
 }
 
 android {
@@ -58,11 +59,9 @@ dependencies {
     implementation("androidx.test:runner:1.5.2")
     val lifecycleVersion = "2.7.0"
 
-
     // Navigation Component
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
-
     implementation ("androidx.navigation:navigation-compose:2.7.7")
     implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
 
@@ -81,9 +80,6 @@ dependencies {
     implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22")
     api ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     api ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-
-
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -104,9 +100,9 @@ dependencies {
     //Google fit
     implementation("com.google.android.gms:play-services-fitness:21.1.0")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
 
     // Lifecycle
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
@@ -115,7 +111,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
     implementation ("androidx.lifecycle:lifecycle-service:$lifecycleVersion")
-
 
     // Google maps
     implementation ("com.google.maps.android:maps-compose:2.14.0")
@@ -130,7 +125,5 @@ dependencies {
     //Hilt
     implementation ("com.google.dagger:hilt-android:2.48")
     kapt ("com.google.dagger:hilt-compiler:2.48")
-
     implementation ("com.google.code.gson:gson:2.10")
-
 }
