@@ -74,27 +74,14 @@ fun RunCard(
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    Log.d("RunCardPoints","$pathPoints")
-
- /*   val averageSpeed = locationViewModel.averageSpeed // Retrieve the average speed from LocationViewModel
-
-    LaunchedEffect(locationViewModel.runningState) {
-        if (locationViewModel.runningState == RunningState.Stopped) {
-            // Display toast with average speed
-            Toast.makeText(
-                context,
-                "Average Speed: $averageSpeed km/hr",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }*/
-
-
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
         enteredText = ""
         showDialog = false
         locationViewModel.resetTime()
+        locationViewModel.resetPathPoints()
+        locationViewModel.resetDistance()
+
     }
 
     Box(
@@ -226,7 +213,6 @@ fun RunCard(
 
                         locationViewModel.finishRun()
                         showDialog = true
-                        locationViewModel.resetDistance()
                     },
                     enabled = stopButtonEnabled
                 ) {
