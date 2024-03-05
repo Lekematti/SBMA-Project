@@ -63,7 +63,6 @@ fun RunCard(
     modifier: Modifier,
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
-    //distanceViewModel: DistanceViewModel,
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
@@ -73,22 +72,6 @@ fun RunCard(
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
-
-    Log.d("RunCardPoints","$pathPoints")
-
- /*   val averageSpeed = locationViewModel.averageSpeed // Retrieve the average speed from LocationViewModel
-
-    LaunchedEffect(locationViewModel.runningState) {
-        if (locationViewModel.runningState == RunningState.Stopped) {
-            // Display toast with average speed
-            Toast.makeText(
-                context,
-                "Average Speed: $averageSpeed km/hr",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }*/
-
 
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
@@ -414,7 +397,6 @@ fun emojiToRating(emoji: String): Rating {
 
 }
 
-// Modify the calculateAverageSpeed function to convert total distance to kilometers
 fun calculateAverageSpeed(totalDistanceInMeters: Double, totalTimeInSeconds: Long): Float {
     val totalDistanceInKm = totalDistanceInMeters / 1000 // Convert total distance to kilometers
     val totalTimeInHours = totalTimeInSeconds / 3600f // Convert total time to hours

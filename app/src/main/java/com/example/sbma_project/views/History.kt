@@ -1,7 +1,6 @@
 package com.example.sbma_project.views
 
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,15 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LiveData
 import com.example.sbma_project.database.Timer
 import com.example.sbma_project.repository.TimerViewModel
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.w3c.dom.Text
-
-
 
 
 @Composable
@@ -48,6 +45,10 @@ fun History(timerViewModel: TimerViewModel) {
     val timersState = remember { mutableStateOf<List<Timer>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryData by remember { mutableStateOf("") }
+
+    val showDialog = remember { mutableStateOf(false) }
+    val timerIdToDelete = remember { mutableLongStateOf(-1L) }
+
 
 
     LaunchedEffect(key1 = timerViewModel.timers) {
@@ -97,7 +98,15 @@ fun History(timerViewModel: TimerViewModel) {
                                     text = "ID: ${timer.id}",
                                     modifier = Modifier.weight(1f)
                                 )
-                                IconButton(onClick = { timerViewModel.deleteTimerById(timer.id) }) {
+                                IconButton(onClick = {
+                                    showDeleteConfirmationDialog(
+                                        timer.id,
+                                        timerIdToDelete,
+                                        showDialog
+                                    )
+                                }
+
+                                ) {
                                     DeleteIcon()
                                 }
                             }
@@ -156,10 +165,42 @@ fun History(timerViewModel: TimerViewModel) {
                 )
             }
         }
+
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = { Text("Confirm Deletion") },
+                text = { Text("Are you sure you want to delete this timer?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            timerViewModel.deleteTimerById(timerIdToDelete.value)
+                            showDialog.value = false
+                        }
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showDialog.value = false }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
 
-
+fun showDeleteConfirmationDialog(
+    timerId: Long,
+    timerIdToDelete: MutableState<Long>,
+    showDialog: MutableState<Boolean>
+) {
+    timerIdToDelete.value = timerId
+    showDialog.value = true
+}
 
 
 private fun formatDate(date: Date): String {
