@@ -32,10 +32,29 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
     ViewModel() {
     val runs: LiveData<List<Run>> = runRepository.getAllRuns()
 
-    fun createRun(startTime: Long, routePath: List<LatLng>, rating : Int? = null, notes : String? = null) {
+    fun createRun(
+        startTime: Long,
+        routePath: List<LatLng>,
+        rating : Int? = null,
+        notes : String? = null,
+        speed : Int? = null,
+        distance : Int? = null,
+        stepLength : Double? = null,
+        steps : Int? = null,
+    ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
-            val newRun = Run(durationInMillis = startTime, routePath = routePath, createdAt = currentTimestamp, modifiedAt = null, rating = rating, notes = notes)
+            val newRun = Run(durationInMillis = startTime,
+                routePath = routePath,
+                createdAt = currentTimestamp,
+                modifiedAt = null,
+                rating = rating,
+                notes = notes,
+                speed = speed ?: 0, // Elvis operator for default value
+                distance = distance ?: 0, // Elvis operator for default value
+                stepLength = stepLength,
+                steps = steps,
+            )
             viewModelScope.launch {
                 runRepository.insertRun(newRun)
             }

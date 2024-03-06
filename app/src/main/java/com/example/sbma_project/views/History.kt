@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.sbma_project.database.Run
+import com.example.sbma_project.graph.RunHistoryGraph
 import com.example.sbma_project.repository.RunViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -52,16 +53,14 @@ fun History(runViewModel: RunViewModel) {
 
     val showDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
-
-
-
+    
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
             runsState.value = runs
         }
     }
-
-
+    
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,7 +74,8 @@ fun History(runViewModel: RunViewModel) {
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Graph placeholder", modifier = Modifier.align(Alignment.TopCenter))
+                    RunHistoryGraph(runViewModel = runViewModel)
+                    //Text(text = "Graph placeholder", modifier = Modifier.align(Alignment.TopCenter))
                 }
             }
             // run stats items
