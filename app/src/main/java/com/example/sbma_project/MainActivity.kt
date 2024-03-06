@@ -55,7 +55,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
     private val fitApiHelper by lazy { FitApiHelper(this) }
-    //private val distanceViewModel: DistanceViewModel by viewModels()
+
     @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +107,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
                                     fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                                    //distanceViewModel = distanceViewModel
                                 )
                             }
                             ViewState.RevokedPermissions -> {
@@ -118,7 +117,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
                                     fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                                    //distanceViewModel = distanceViewModel
                                 )
                             }
                             is ViewState.Success -> {
@@ -135,7 +133,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     locationViewModel = locationViewModel,
                                     timerViewModel = timerViewModel,
                                     fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                                    //distanceViewModel = distanceViewModel
                                 )
                             }
                         }

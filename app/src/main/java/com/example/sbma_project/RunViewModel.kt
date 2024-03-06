@@ -1,3 +1,4 @@
+/*
 package com.example.sbma_project
 
 import androidx.lifecycle.ViewModel
@@ -88,4 +89,4 @@ class RunViewModel(
             }
         }
     }
-}
+}*/

@@ -1,9 +1,7 @@
 package com.example.sbma_project.views
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,12 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LiveData
 import com.example.sbma_project.database.Timer
+import com.example.sbma_project.graph.RunHistoryGraph
 import com.example.sbma_project.repository.TimerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.w3c.dom.Text
 
 
 @Composable
@@ -38,6 +34,7 @@ fun History(timerViewModel: TimerViewModel) {
     val timersState = remember { mutableStateOf<List<Timer>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryData by remember { mutableStateOf("") }
+
 
     LaunchedEffect(key1 = timerViewModel.timers) {
         timerViewModel.timers.observeForever { timers ->
@@ -57,7 +54,9 @@ fun History(timerViewModel: TimerViewModel) {
                     .padding(16.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Graph placeholder", modifier = Modifier.align(Alignment.TopCenter))
+                    // Assuming you have access to the RunDao instance
+                    RunHistoryGraph(timerViewModel)
+                    Modifier.align(Alignment.TopCenter)
                 }
             }
             LazyColumn {

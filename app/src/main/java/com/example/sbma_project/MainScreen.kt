@@ -38,8 +38,6 @@ fun MainScreen(
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
-    //distanceViewModel: DistanceViewModel,
-
     ) {
     val navController = rememberNavController()
     Scaffold(
@@ -59,7 +57,6 @@ fun MainScreen(
                 locationViewModel = locationViewModel,
                 timerViewModel = timerViewModel,
                 fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                //distanceViewModel = distanceViewModel
             )
         }
     }

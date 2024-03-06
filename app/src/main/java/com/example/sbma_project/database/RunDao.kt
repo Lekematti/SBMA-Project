@@ -1,3 +1,4 @@
+/*
 package com.example.sbma_project.database
 
 import androidx.room.Dao
@@ -16,5 +17,4 @@ interface RunDao {
 
     @Query("SELECT * FROM Run ORDER BY date ASC")
     fun getRunsOrderedByDate(): Flow<List<Run>>
-
-}
+}*/

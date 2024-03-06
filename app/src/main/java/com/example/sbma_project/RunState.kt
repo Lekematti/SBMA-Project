@@ -1,4 +1,4 @@
-package com.example.sbma_project
+/*package com.example.sbma_project
 
 import com.example.sbma_project.database.Run
 
@@ -11,4 +11,4 @@ data class RunState (
     val stepLength: Double = 0.0,
     val time: Double = 0.0,
     val sortType: SortType = SortType.DATE
-)
+)*/

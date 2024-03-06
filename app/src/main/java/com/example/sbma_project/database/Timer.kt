@@ -24,6 +24,11 @@ data class Timer(
     val rating : Int?,
     val notes : String?,
 
+    val avgSpeed: Int?,
+    val distance: Int?,
+    val steps: Int?,
+    val stepLength: Double?,
+
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date,
 

@@ -46,7 +46,6 @@ import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.repository.TimerViewModel
 import com.example.sbma_project.services.RunningService
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
@@ -60,7 +59,6 @@ fun RunCard(
     modifier: Modifier,
     locationViewModel: LocationViewModel,
     timerViewModel: TimerViewModel,
-    //distanceViewModel: DistanceViewModel,
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
@@ -289,7 +287,11 @@ fun RunCard(
                                         time,
                                         pathPoints,
                                         rating,
-                                        enteredText
+                                        enteredText,
+                                        avgSpeed = timerViewModel.avgSpeed,
+                                        distance = timerViewModel.distance,
+                                        stepLength = timerViewModel.stepLength,
+                                        steps = timerViewModel.steps
                                     )
                                 }
                                 resetStateAndHideDialog()

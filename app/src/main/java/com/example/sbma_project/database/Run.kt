@@ -1,4 +1,4 @@
-package com.example.sbma_project.database
+/*package com.example.sbma_project.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,4 +14,4 @@ data class Run(
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-)
+)*/
