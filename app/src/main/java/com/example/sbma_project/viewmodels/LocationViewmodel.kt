@@ -1,6 +1,7 @@
 package com.example.sbma_project.viewmodels
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.math.RoundingMode
 import javax.inject.Inject
 
 
@@ -22,8 +24,14 @@ class LocationViewModel @Inject constructor(
     private val getLocationUseCase: GetLocationUseCase,
 ) : ViewModel(){
 
+    var totalTimeInHours: Float = 0f
+        private set
+
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
+
+    private val _speed: MutableStateFlow<Float> = MutableStateFlow(0f)
+    val speed = _speed.asStateFlow()
 
     // State to hold the list of LatLng points representing the polyline
     private val _pathPoints: MutableStateFlow<List<LatLng>> = MutableStateFlow(emptyList())
@@ -68,10 +76,12 @@ class LocationViewModel @Inject constructor(
         startLocationUpdates()
     }
 
+
     // Function to pause the run
     fun pauseRun() {
         runningState = RunningState.Paused
         _stopButtonEnabled.value = false
+        _speed.value = 0f
     }
 
     // Function to resume the run
@@ -86,14 +96,17 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Stopped
         _stopButtonEnabled.value = false
         locationJob?.cancel()
+        totalTimeInHours = time.value / 3600f
+        _speed.value = 0f
     }
+
+
     fun resetPathPoints(){
         _pathPoints.value = emptyList()
 
     }
 
     private var locationJob: Job? = null
-    // Modify the existing startLocationUpdates method to update pathPoints
 
     private fun startLocationUpdates() {
         if (runningState != RunningState.Paused) {
@@ -101,13 +114,22 @@ class LocationViewModel @Inject constructor(
         }
 
         locationJob = viewModelScope.launch {
-            getLocationUseCase.invoke().collect { location ->
+            getLocationUseCase.invoke().collect { locationWithSpeed ->
                 // Update viewState with location data
-                _viewState.value = ViewState.Success(location)
+
+                if (locationWithSpeed != null) {
+                    _viewState.value = ViewState.Success(locationWithSpeed.location)
+                }
 
                 // If the user is currently running, update pathPoints with new location
                 if (runningState == RunningState.Running) {
-                    _pathPoints.value = _pathPoints.value + (location ?: LatLng(0.00, 0.00))
+                    if (locationWithSpeed != null) {
+                        _pathPoints.value = _pathPoints.value + (locationWithSpeed.location ?: LatLng(0.00, 0.00))
+                        Log.d("locationSpeed", "${locationWithSpeed.location}")
+                        _speed.value = (locationWithSpeed.speed * 3.6f).toBigDecimal()
+                            .setScale(2, RoundingMode.HALF_UP).toFloat()
+
+                    }
                     updateDistance()
                 }
             }

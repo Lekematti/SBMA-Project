@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.SettingsActionListener
-import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.RunCard
 //import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
@@ -49,7 +49,7 @@ fun Home(
     settingsActionListener: SettingsActionListener,
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
-    timerViewModel: TimerViewModel,
+    runViewModel: RunViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
     //distanceViewModel: DistanceViewModel,
 ) {
@@ -103,7 +103,7 @@ fun Home(
                                 .fillMaxHeight(1f)
                                 .padding(10.dp),
                             locationViewModel = locationViewModel,
-                            timerViewModel = timerViewModel,
+                            runViewModel = runViewModel,
                             pathPoints = pathPoints,
                             fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
                             //distanceViewModel = distanceViewModel

@@ -20,7 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.sbma_project.APIHelper.FitApiHelper
-import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -36,7 +36,7 @@ fun MainScreen(
     settingsActionListener: SettingsActionListener,
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
-    timerViewModel: TimerViewModel,
+    runViewModel: RunViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
     //distanceViewModel: DistanceViewModel,
 
@@ -57,7 +57,7 @@ fun MainScreen(
                 settingsActionListener = settingsActionListener,
                 isConnected = isConnected,
                 locationViewModel = locationViewModel,
-                timerViewModel = timerViewModel,
+                runViewModel = runViewModel,
                 fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
                 //distanceViewModel = distanceViewModel
             )

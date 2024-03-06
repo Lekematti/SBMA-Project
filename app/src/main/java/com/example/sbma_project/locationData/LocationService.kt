@@ -1,10 +1,9 @@
-package com.example.sbma_project.data
+package com.example.sbma_project.locationData
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.sbma_project.extension.hasLocationPermission
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -24,7 +23,7 @@ class LocationService @Inject constructor(
 ): ILocationService {
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.S)
-    override fun requestLocationUpdates(): Flow<LatLng?> = callbackFlow {
+    override fun requestLocationUpdates(): Flow<LocationWithSpeed?> = callbackFlow {
 
         if (!context.hasLocationPermission()) {
             trySend(null)
@@ -38,10 +37,17 @@ class LocationService @Inject constructor(
 
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.locations.lastOrNull()?.let {
-                    trySend(LatLng(it.latitude, it.longitude))
-                    Log.i("locationExample", "onLocationResult: $it")
-                }
+                val location = locationResult.lastLocation
+                val speed = location?.speed // Speed in meters/second
+
+                val locationWithSpeed =
+                    speed?.let { it ->
+                        LocationWithSpeed(
+                            LatLng(location.latitude, location.longitude),
+                            it
+                        )
+                    }
+                trySend(locationWithSpeed)
             }
         }
 
@@ -56,10 +62,13 @@ class LocationService @Inject constructor(
         }
     }
 
-    override fun requestCurrentLocation(): Flow<LatLng?> {
+    override fun requestCurrentLocation(): Flow<LocationWithSpeed?> {
         TODO("Not yet implemented")
     }
 
 }
+
+data class LocationWithSpeed(val location: LatLng?, val speed: Float)
+
 
 

@@ -5,13 +5,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    entities = [Run::class, Timer::class],
-    version = 7
+    entities = [Run::class],
+    version = 10
 )
 @TypeConverters(Converters::class)
 abstract class RunDatabase: RoomDatabase() {
-
-    abstract fun runDao(): RunDao
-
-    abstract fun timerDao() :TimerDao
+    abstract fun runDao() :RunDao
 }

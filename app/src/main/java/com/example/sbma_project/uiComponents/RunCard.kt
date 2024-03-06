@@ -2,6 +2,7 @@ package com.example.sbma_project.uiComponents
 
 import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
-import com.example.sbma_project.repository.TimerViewModel
+import com.example.sbma_project.distance.DistanceCalculator
+import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.services.RunningService
 //import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
@@ -59,8 +61,7 @@ import kotlinx.coroutines.delay
 fun RunCard(
     modifier: Modifier,
     locationViewModel: LocationViewModel,
-    timerViewModel: TimerViewModel,
-    //distanceViewModel: DistanceViewModel,
+    runViewModel: RunViewModel,
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
@@ -77,6 +78,8 @@ fun RunCard(
         showDialog = false
         locationViewModel.resetTime()
         locationViewModel.resetPathPoints()
+        locationViewModel.resetDistance()
+
     }
 
     Box(
@@ -112,7 +115,8 @@ fun RunCard(
                 CardSpeed(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                    locationViewModel = locationViewModel,
                 )
             }
 
@@ -189,9 +193,24 @@ fun RunCard(
                             it.action = RunningService.Actions.STOP.toString()
                             context.startService(it)
                         }
+                        // Retrieve total distance and total time from LocationViewModel
+                        val totalDistance = pathPoints?.let {
+                            DistanceCalculator.calculateTotalDistance(
+                                it
+                            )
+                        }
+                        val totalTimeInSeconds = locationViewModel.time.value
+
+                        val averageSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
+
+                        Toast.makeText(
+                            context,
+                            "Average Speed: $averageSpeed km/hr",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                         locationViewModel.finishRun()
                         showDialog = true
-                        locationViewModel.resetDistance()
                     },
                     enabled = stopButtonEnabled
                 ) {
@@ -285,7 +304,7 @@ fun RunCard(
                                     selectedEmoji
                                 ).value
                                 if (pathPoints != null) {
-                                    timerViewModel.createTimer(
+                                    runViewModel.createRun(
                                         time,
                                         pathPoints,
                                         rating,
@@ -373,6 +392,17 @@ fun emojiToRating(emoji: String): Rating {
         "😃" -> Rating.Good
         "😄" -> Rating.VeryGood
         else -> throw IllegalArgumentException("Invalid emoji")
+    }
+
+}
+
+fun calculateAverageSpeed(totalDistanceInMeters: Double, totalTimeInSeconds: Long): Float {
+    val totalDistanceInKm = totalDistanceInMeters / 1000 // Convert total distance to kilometers
+    val totalTimeInHours = totalTimeInSeconds / 3600f // Convert total time to hours
+    return if (totalTimeInHours > 0 && totalDistanceInKm > 0) {
+        (totalDistanceInKm / totalTimeInHours).toFloat() // Calculate average speed
+    } else {
+        0f // Return 0 if either time or distance is 0
     }
 }
 
