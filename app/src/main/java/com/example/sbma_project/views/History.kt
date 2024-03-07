@@ -1,7 +1,6 @@
 package com.example.sbma_project.views
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,24 +42,20 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 @Composable
 fun History(runViewModel: RunViewModel) {
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
-    var selectedHistoryData by remember { mutableStateOf("") }
+    var selectedHistoryId by remember { mutableLongStateOf(-1L) } // Initialize with a default value
 
     val showDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
-
-
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
             runsState.value = runs
         }
     }
-
 
     Column(
         modifier = Modifier
@@ -86,7 +81,7 @@ fun History(runViewModel: RunViewModel) {
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .clickable {
-                                selectedHistoryData = "This has history data in it for item $runs"
+                                selectedHistoryId = runs.id // Store the ID only
                                 showDetailView = true
                             }
                     ) {
@@ -99,7 +94,7 @@ fun History(runViewModel: RunViewModel) {
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
-                                    text = "ID: ${runs.id}",
+                                    text = formatDate(runs.createdAt),
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(onClick = {
@@ -115,58 +110,20 @@ fun History(runViewModel: RunViewModel) {
                                 }
                             }
 
-
                             Spacer(modifier = Modifier.height(8.dp))
-
 
                             Text(text = "Duration: ${runs.durationInMillis}s")
                             Text(text = "route LatLng size: ${runs.routePath?.size}")
-                            Text(text = "Created at: ${formatDate(runs.createdAt)}")
                         }
                     }
                 }
             }
-
-
         } else {
             // Detailed view
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(vertical = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-
-
-                    Text("Graph placeholder for $selectedHistoryData")
+            selectedHistoryId.takeIf { it != -1L }?.let { id ->
+                DetailedHistoryView(runViewModel = runViewModel, runId = id) {
+                    showDetailView = false // Close the detailed view
                 }
-
-
-                Text(
-                    text = "Detailed View for $selectedHistoryData",
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-
-                Text(
-                    text = "More detailed information here...",
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-
-                Text(
-                    text = "Back",
-                    modifier = Modifier
-                        .clickable { showDetailView = false }
-                        .padding(top = 16.dp)
-                        .background(color = Color.LightGray)
-                )
             }
         }
 
@@ -201,6 +158,7 @@ fun History(runViewModel: RunViewModel) {
     }
 }
 
+
 fun showDeleteConfirmationDialog(
     timerId: Long,
     timerIdToDelete: MutableState<Long>,
@@ -211,8 +169,8 @@ fun showDeleteConfirmationDialog(
 }
 
 
-private fun formatDate(date: Date): String {
-    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("MMMM d, yyyy 'at' HH:mm:ss", Locale.US)
     return formatter.format(date)
 }
 
@@ -225,6 +183,18 @@ fun DeleteIcon() {
         tint = Color.Red
     )
 }
+
+fun ratingToEmoji(rating: Int): String {
+    return when (rating) {
+        1 -> "😞"
+        2 -> "😐"
+        3 -> "😊"
+        4 -> "😃"
+        5 -> "😄"
+        else -> throw IllegalArgumentException("Invalid rating value")
+    }
+}
+
 
 
 

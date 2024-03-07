@@ -25,6 +25,12 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
     suspend fun deleteRunById(runId: Long) {
         runDao.deleteRunById(runId)
     }
+
+    fun getRunById(runId: Long): LiveData<Run?> {
+        return runDao.getRunById(runId)
+    }
+
+
 }
 
 @HiltViewModel
@@ -32,10 +38,28 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
     ViewModel() {
     val runs: LiveData<List<Run>> = runRepository.getAllRuns()
 
-    fun createRun(startTime: Long, routePath: List<LatLng>, rating : Int? = null, notes : String? = null) {
+    fun createRun(
+        startTime: Long,
+        routePath: List<LatLng>,
+        speedList: List<Float>,
+        rating : Int? = null,
+        notes : String? = null,
+        speedTimestamps: List<Long>?,
+        avgSpeed :Float?,
+    ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
-            val newRun = Run(durationInMillis = startTime, routePath = routePath, createdAt = currentTimestamp, modifiedAt = null, rating = rating, notes = notes)
+            val newRun = Run(
+                durationInMillis = startTime,
+                routePath = routePath,
+                createdAt = currentTimestamp,
+                modifiedAt = null,
+                rating = rating,
+                notes = notes,
+                speedList = speedList,
+                speedTimestamps = speedTimestamps,
+                avgSpeed = avgSpeed,
+            )
             viewModelScope.launch {
                 runRepository.insertRun(newRun)
             }
@@ -46,6 +70,10 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         viewModelScope.launch {
             runRepository.deleteRunById(runId)
         }
+    }
+
+    fun getRunById(runId: Long): LiveData<Run?> {
+        return runRepository.getRunById(runId)
     }
 
 }

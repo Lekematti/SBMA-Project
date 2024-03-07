@@ -23,6 +23,10 @@ data class Run(
     val routePath : List<LatLng>?,
     val rating : Int?,
     val notes : String?,
+    val speedList: List<Float>?,
+    val speedTimestamps: List<Long>?,
+    val avgSpeed :Float?,
+
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date,
@@ -38,6 +42,9 @@ interface RunDao {
 
     @Query("SELECT * FROM runs")
     fun getAllRuns(): LiveData<List<Run>>
+
+    @Query("SELECT * FROM runs WHERE id = :runId")
+    fun getRunById(runId: Long): LiveData<Run?>
 
     @Query("DELETE FROM runs WHERE id = :runId")
     suspend fun deleteRunById(runId: Long)
@@ -68,5 +75,29 @@ object Converters {
     @JvmStatic
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromFloatList(value: List<Float>?): String? {
+        return value?.joinToString(separator = ",")
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toFloatList(value: String?): List<Float>? {
+        return value?.split(",")?.map { it.toFloat() }
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromTimestampsList(value: List<Long>?): String? {
+        return value?.joinToString(",")
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toTimestampsList(value: String?): List<Long>? {
+        return value?.split(",")?.map { it.toLong() }
     }
 }

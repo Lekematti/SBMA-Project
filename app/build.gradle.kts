@@ -111,6 +111,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
     implementation ("androidx.lifecycle:lifecycle-service:$lifecycleVersion")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
+
 
     // Google maps
     implementation ("com.google.maps.android:maps-compose:2.14.0")
@@ -126,4 +128,7 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:2.48")
     kapt ("com.google.dagger:hilt-compiler:2.48")
     implementation ("com.google.code.gson:gson:2.10")
+
+
+
 }
