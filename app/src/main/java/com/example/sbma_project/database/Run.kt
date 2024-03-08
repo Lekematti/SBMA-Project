@@ -55,6 +55,10 @@ interface RunDao {
     @Query("UPDATE runs SET notes = :newNote WHERE id = :runId")
     suspend fun updateRunNotes(runId: Long, newNote: String)
 
+    @Query("UPDATE runs SET modifiedAt = :newModifiedAt WHERE id = :runId")
+    suspend fun updateModifiedAt(runId: Long, newModifiedAt :Date)
+
+
 }
 
 object Converters {

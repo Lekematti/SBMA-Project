@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,8 +24,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.sbma_project.R
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.repository.RunViewModel
 import java.text.SimpleDateFormat
@@ -47,11 +50,20 @@ import java.util.Locale
 
 @Composable
 fun History(runViewModel: RunViewModel) {
+    // Define sorting options
+    val sortingOptions = listOf(
+        "Created Date Ascending",
+        "Created Date Descending",
+        "Modified Date Ascending",
+        "Modified Date Descending"
+    )
+
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryId by remember { mutableLongStateOf(-1L) } // Initialize with a default value
 
     val showDialog = remember { mutableStateOf(false) }
+    val showSortDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
 
     LaunchedEffect(key1 = runViewModel.runs) {
@@ -74,6 +86,31 @@ fun History(runViewModel: RunViewModel) {
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Text(text = "Graph placeholder", modifier = Modifier.align(Alignment.TopCenter))
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { showSortDialog.value = true }, // Show the sort dialog
+                    modifier = Modifier.padding(top = 16.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Sort By")
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.sort_24px),
+                            contentDescription = "Back Arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
             // run stats items
@@ -163,6 +200,64 @@ fun History(runViewModel: RunViewModel) {
                 }
             )
         }
+
+
+        if (showSortDialog.value) {
+            // Sorting dialog
+            AlertDialog(
+                onDismissRequest = { showSortDialog.value = false },
+                title = { Text("Sort By") },
+                confirmButton = {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .fillMaxWidth(),
+                    ) {
+                        sortingOptions.forEachIndexed { index, option ->
+                            Button(
+                                onClick = {
+                                    // sorting based on the selected option
+                                    when (option) {
+                                        "Created Date Ascending" -> {
+                                            runsState.value = runsState.value.sortedBy { it.createdAt }
+                                        }
+                                        "Created Date Descending" -> {
+                                            runsState.value = runsState.value.sortedByDescending { it.createdAt }
+                                        }
+
+                                        "Modified Date Ascending" -> {
+                                            runsState.value = runsState.value.sortedBy { it.modifiedAt }
+                                        }
+                                        "Modified Date Descending" -> {
+                                            runsState.value = runsState.value.sortedByDescending { it.modifiedAt }
+                                        }
+                                    }
+                                    showSortDialog.value = false // Close the dialog after sorting
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(),
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                contentPadding = PaddingValues(16.dp)
+                            ) {
+                                Text(option)
+                            }
+                            //divider after each option except the last one
+                            if (index < sortingOptions.size - 1) {
+                                Divider(
+                                    modifier = Modifier
+                                        .height(2.dp)
+                                        .fillMaxWidth(0.9f)
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+        }
+
+
     }
 }
 

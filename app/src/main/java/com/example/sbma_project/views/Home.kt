@@ -77,9 +77,6 @@ fun Home(
                         }
                     }
                 }
-                //when marker is needed (for later)
-                val marker = currentPosition?.let { LatLng(it.latitude, currentPosition.longitude) }
-
                 if (cameraState != null) {
                     Column {
                         GoogleMap(

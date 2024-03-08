@@ -1,6 +1,5 @@
 package com.example.sbma_project.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,12 +21,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,9 +47,27 @@ import com.example.sbma_project.R
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.EmojiButton
 import com.example.sbma_project.uiComponents.emojiToRating
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import java.util.Date
 
 @Composable
-fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> Unit) {
+fun DetailedHistoryView(
+    runViewModel: RunViewModel,
+    runId: Long,
+    onBack: () -> Unit
+) {
+    var isFirstTime by remember { mutableStateOf(true) }
+    val cameraState = remember { CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 20f, 0f,0f)) }
+
     val runDetails = runViewModel.getRunById(runId).observeAsState()
 
     // State to track whether the dialog is open
@@ -87,13 +106,17 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
 
     // Function to handle rating selection
     fun onRatingSelected(rating: Int) {
+        val currentTimestamp = Date()
         selectedRating.intValue = rating
+        runViewModel.updateModifiedDate(runId, currentTimestamp)
         runViewModel.updateRunRating(runId, rating)
         showDialog.value = false
     }
 
     // Function to handle saving edited note
     fun onSaveNote() {
+        val currentTimestamp = Date() // Get current date and time
+        runViewModel.updateModifiedDate(runId, currentTimestamp)
         runViewModel.updateRunNotes(runId, noteText)
         showNoteDialog.value = false
     }
@@ -134,45 +157,117 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
+
         runDetails.value?.let { run ->
+
+            val initialPosition = run.routePath?.firstOrNull()?.let {
+                LatLng(it.latitude, it.longitude)
+            }
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
-                    text = formatDate(run.createdAt),
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center,
+                Row(
                     modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                )
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = formatDate(run.createdAt),
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .weight(1f)
+                    )
+                    Card(
+                        modifier = Modifier
+                            .clickable {
+                                showDeleteConfirmationDialog(
+                                    run.id,
+                                    runIdToDelete,
+                                    showDeleteConfirmationDialog
+                                )
+                            }
+                            .size(48.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(8.dp),
+                    ) {
+                        DeleteIcon(Modifier.size(48.dp))
+                    }
+                }
+
+
                 Card {
                     Column(
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
+                        Card(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .fillMaxHeight(0.3f)
+                                .fillMaxWidth()
                         ) {
-                            Card(
-                                modifier = Modifier
-                                    .clickable {
-                                        showDeleteConfirmationDialog(
-                                            run.id,
-                                            runIdToDelete,
-                                            showDeleteConfirmationDialog
-                                        )
+                            if (!run.routePath.isNullOrEmpty()) {
+                                initialPosition?.let {
+                                    if (isFirstTime) { // If it's the first time, set camera position
+                                        LaunchedEffect(key1 = run.routePath.first()){
+                                            cameraState.centerOnLocation(run.routePath.first(), zoom = 20f)
+                                            isFirstTime = false
+                                        }
                                     }
-                                    .align(Alignment.CenterVertically)
-                                    .size(48.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                elevation = CardDefaults.cardElevation(8.dp),
-                            ) {
-                                DeleteIcon(Modifier.size(48.dp))
-                            }
+                                    GoogleMap(
+                                        cameraPositionState = cameraState,
+                                        properties = MapProperties(
+                                            isMyLocationEnabled = true,
+                                            mapType = MapType.HYBRID,
+                                            isTrafficEnabled = true
+                                        ),
+                                    ) {
+                                        // Draw polyline
+                                        DrawPolyline(run.routePath)
 
+                                        // marker for start point
+                                        if (run.routePath.isNotEmpty()) {
+                                            Marker(
+                                                state = MarkerState(
+                                                    LatLng(
+                                                        run.routePath.first().latitude,
+                                                        run.routePath.first().longitude
+                                                    )
+                                                ),
+                                                title = "Start",
+                                                icon = BitmapDescriptorFactory.defaultMarker(
+                                                    BitmapDescriptorFactory.HUE_CYAN
+                                                )
+                                            )
+                                        }
+
+                                        // marker for finish point
+                                        if (run.routePath.isNotEmpty()) {
+                                            Marker(
+                                                state = MarkerState(
+                                                    LatLng(
+                                                        run.routePath.last().latitude,
+                                                        run.routePath.last().longitude
+                                                    )
+                                                ),
+                                                title = "Finish",
+                                                icon = BitmapDescriptorFactory.defaultMarker(
+                                                    BitmapDescriptorFactory.HUE_GREEN
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                Text(text = "No routes were detected.")
+                            }
                         }
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -355,7 +450,6 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
                                 }
                             }
                         }
-
                         //delete confirmation dialog
                         if (showDeleteConfirmationDialog.value) {
                             AlertDialog(
@@ -397,9 +491,27 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
                             description = it
                         )
                     }
+                    run.modifiedAt?.let {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            Text(text = "last modified at: ${formatDate(it)}")
+                        }
+                    }
+
                 }
             }
-        } ?: Text("Run details loading..")
+        } ?: Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+
+
     }
 }
 
@@ -432,3 +544,13 @@ fun DetailCardItem(modifier: Modifier, icon: Painter, title: String, description
         }
     }
 }
+
+private suspend fun CameraPositionState.centerOnLocation(
+    location: LatLng,
+    zoom: Float = 15f
+) = animate(
+    update = CameraUpdateFactory.newLatLngZoom(
+        location,
+        zoom
+    ),
+)

@@ -1,8 +1,8 @@
 package com.example.sbma_project.uiComponents
 
+//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,13 +48,10 @@ import com.example.sbma_project.R
 import com.example.sbma_project.distance.DistanceCalculator
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.services.RunningService
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 
 @RequiresApi(Build.VERSION_CODES.S)
