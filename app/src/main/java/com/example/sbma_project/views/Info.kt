@@ -16,11 +16,11 @@ import com.example.sbma_project.R
 
 @Composable
 fun Info() {
-    var appDescription = """
+    val appDescription = """
         RunAlyzer is an application meant to give important data for runners or walkers who want to see information about their runs/walks after or during them.
     """.trimIndent()
 
-    var developerNames = """
+    val developerNames = """
                          Developers:
                          
                          - Leo Koskimäki
