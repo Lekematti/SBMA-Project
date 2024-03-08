@@ -49,6 +49,12 @@ interface RunDao {
     @Query("DELETE FROM runs WHERE id = :runId")
     suspend fun deleteRunById(runId: Long)
 
+    @Query("UPDATE runs SET rating = :newRating WHERE id = :runId")
+    suspend fun updateRunRating(runId: Long, newRating: Int)
+
+    @Query("UPDATE runs SET notes = :newNote WHERE id = :runId")
+    suspend fun updateRunNotes(runId: Long, newNote: String)
+
 }
 
 object Converters {

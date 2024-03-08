@@ -3,19 +3,37 @@ package com.example.sbma_project.views
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,12 +41,71 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.example.sbma_project.R
 import com.example.sbma_project.repository.RunViewModel
+import com.example.sbma_project.uiComponents.EmojiButton
+import com.example.sbma_project.uiComponents.emojiToRating
 
 @Composable
 fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> Unit) {
     val runDetails = runViewModel.getRunById(runId).observeAsState()
+
+    // State to track whether the dialog is open
+    val showDialog = remember { mutableStateOf(false) }
+    val showNoteDialog = remember { mutableStateOf(false) }
+    val showDeleteConfirmationDialog = remember { mutableStateOf(false) }
+
+    val runIdToDelete = remember { mutableLongStateOf(-1L) }
+
+
+    // state to track notes and emojis
+    var selectedEmoji by remember { mutableStateOf("") }
+    var noteText by remember { mutableStateOf("") }
+
+    // State to track selected rating
+    val selectedRating = remember { mutableIntStateOf(0) }
+
+    // Function to show dialog for updating rating
+    fun showRatingDialog() {
+        showDialog.value = true
+        // Initialize emoji  with the existing emoji if available
+        runDetails.value?.rating?.let { rating ->
+            selectedEmoji = ratingToEmoji(rating)
+        }
+    }
+
+
+    // Function to show note editing dialog
+    fun showNoteEditDialog() {
+        showNoteDialog.value = true
+        // Initialize note text with the existing note if available
+        runDetails.value?.notes?.let { note ->
+            noteText = note
+        }
+    }
+
+    // Function to handle rating selection
+    fun onRatingSelected(rating: Int) {
+        selectedRating.intValue = rating
+        runViewModel.updateRunRating(runId, rating)
+        showDialog.value = false
+    }
+
+    // Function to handle saving edited note
+    fun onSaveNote() {
+        runViewModel.updateRunNotes(runId, noteText)
+        showNoteDialog.value = false
+    }
+
+    // Function to handle cancelling note editing
+    fun onCancelNoteEdit() {
+        // Reset noteText to the existing note if available
+        runDetails.value?.notes?.let { note ->
+            noteText = note
+        }
+        showNoteDialog.value = false
+    }
 
     // Render detailed view
     Column(
@@ -37,13 +114,23 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
             .padding(16.dp)
     ) {
         // Back button
-        Text(
-            text = "Back",
-            modifier = Modifier
-                .clickable { onBack() }
-                .padding(top = 16.dp)
-                .background(color = Color.LightGray)
-        )
+        Button(
+            onClick = { onBack() },
+            modifier = Modifier.padding(top = 16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_back_ios_24px),
+                    contentDescription = "Back Arrow",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Back")
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -52,7 +139,7 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "${formatDate(run.createdAt)}",
+                    text = formatDate(run.createdAt),
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -60,7 +147,32 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
                         .fillMaxWidth()
                 )
                 Card {
-                    Column {
+                    Column(
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Card(
+                                modifier = Modifier
+                                    .clickable {
+                                        showDeleteConfirmationDialog(
+                                            run.id,
+                                            runIdToDelete,
+                                            showDeleteConfirmationDialog
+                                        )
+                                    }
+                                    .align(Alignment.CenterVertically)
+                                    .size(48.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                elevation = CardDefaults.cardElevation(8.dp),
+                            ) {
+                                DeleteIcon(Modifier.size(48.dp))
+                            }
+
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -122,16 +234,25 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
                             )
                         }
                         Row {
-                            run.rating?.let { "${ratingToEmoji(it)}" }?.let {
+                            run.rating?.let { rating ->
                                 DetailCardItem(
                                     modifier = Modifier
+                                        .clickable { showRatingDialog() }
                                         .padding(16.dp)
                                         .weight(0.5f),
                                     icon = painterResource(id = R.drawable.relax_24px),
                                     title = "Post Run Feeling",
-                                    description = it
+                                    description = ratingToEmoji(rating)
                                 )
-                            }
+                            } ?: DetailCardItem(
+                                modifier = Modifier
+                                    .clickable { showRatingDialog() }
+                                    .padding(16.dp)
+                                    .weight(0.5f),
+                                icon = painterResource(id = R.drawable.relax_24px),
+                                title = "Post Run Feeling",
+                                description = ""
+                            )
                             DetailCardItem(
                                 modifier = Modifier
                                     .padding(16.dp)
@@ -141,20 +262,144 @@ fun DetailedHistoryView(runViewModel: RunViewModel, runId: Long, onBack: () -> U
                                 description = "${run.speedList?.size}"
                             )
                         }
-                        run.notes?.let {
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp),
-                                icon = painterResource(id = R.drawable.description_24px),
-                                title = "Notes",
-                                description = it
+                        //update rating dialog
+                        if (showDialog.value) {
+                            Dialog(onDismissRequest = { showDialog.value = false }) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .height(200.dp)
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Update Post Run Feeling",
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            modifier = Modifier.padding(bottom = 8.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Row(
+                                            horizontalArrangement = Arrangement.SpaceEvenly,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            listOf("😞", "😐", "😊", "😃", "😄").forEach { emoji ->
+                                                EmojiButton(
+                                                    emoji = emoji,
+                                                    isSelected = selectedEmoji == emoji,
+                                                    onClick = { onRatingSelected(emojiToRating(emoji).value) }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Note editing dialog
+                        if (showNoteDialog.value) {
+                            Dialog(onDismissRequest = { showNoteDialog.value = false }) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp)
+                                    ) {
+                                        Text(
+                                            text = "Edit Note",
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            modifier = Modifier.padding(bottom = 8.dp)
+                                        )
+                                        // Text field to edit note
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(100.dp)
+                                        ) {
+                                            BasicTextField(
+                                                value = noteText,
+                                                onValueChange = { noteText = it },
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(8.dp),
+                                                textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                                                maxLines = 5
+                                            )
+                                        }
+                                        // Buttons
+                                        Row(
+                                            horizontalArrangement = Arrangement.End,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Button(
+                                                onClick = { onCancelNoteEdit() },
+                                                modifier = Modifier.padding(end = 8.dp),
+                                                colors = if (noteText != run.notes) ButtonDefaults.outlinedButtonColors() else ButtonDefaults.buttonColors(
+                                                    MaterialTheme.colorScheme.primary
+                                                ),
+                                            ) {
+                                                Text(text = "Cancel")
+                                            }
+                                            Button(
+                                                onClick = { onSaveNote() },
+                                                enabled = noteText != run.notes,
+                                            ) {
+                                                Text(text = "Update Note")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //delete confirmation dialog
+                        if (showDeleteConfirmationDialog.value) {
+                            AlertDialog(
+                                onDismissRequest = { showDeleteConfirmationDialog.value = false },
+                                title = { Text("Confirm Deletion") },
+                                text = { Text("Are you sure you want to delete this run?") },
+                                confirmButton = {
+                                    Button(
+                                        onClick = {
+                                            runViewModel.deleteRunById(runIdToDelete.longValue)
+                                            showDeleteConfirmationDialog.value = false
+                                            onBack()
+                                        },
+                                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                                        contentPadding = PaddingValues(16.dp)
+                                    ) {
+                                        Text("Confirm")
+                                    }
+                                },
+                                dismissButton = {
+                                    Button(
+                                        onClick = { showDeleteConfirmationDialog.value = false },
+                                        colors = ButtonDefaults.outlinedButtonColors(),
+                                        contentPadding = PaddingValues(16.dp)
+                                    ) {
+                                        Text("Cancel")
+                                    }
+                                }
                             )
                         }
                     }
+                    run.notes?.let {
+                        DetailCardItem(
+                            modifier = Modifier
+                                .clickable { showNoteEditDialog() }
+                                .padding(16.dp),
+                            icon = painterResource(id = R.drawable.description_24px),
+                            title = "Notes",
+                            description = it
+                        )
+                    }
                 }
-
             }
-        }
+        } ?: Text("Run details loading..")
     }
 }
 
@@ -187,6 +432,3 @@ fun DetailCardItem(modifier: Modifier, icon: Painter, title: String, description
         }
     }
 }
-
-
-

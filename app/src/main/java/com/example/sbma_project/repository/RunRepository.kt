@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.database.RunDao
+import com.example.sbma_project.uiComponents.Rating
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -28,6 +29,14 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
 
     fun getRunById(runId: Long): LiveData<Run?> {
         return runDao.getRunById(runId)
+    }
+
+    suspend fun updateRunRating(runId: Long, rating: Int){
+        return runDao.updateRunRating(runId, rating)
+    }
+
+    suspend fun updateRunNotes(runId: Long, notes: String?){
+        return runDao.updateRunNotes(runId, notes ?: "")
     }
 
 
@@ -71,6 +80,20 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
             runRepository.deleteRunById(runId)
         }
     }
+
+     fun updateRunRating(runId: Long, rating: Int){
+         viewModelScope.launch {
+             runRepository.updateRunRating(runId, rating)
+         }
+    }
+
+    fun updateRunNotes(runId: Long, notes: String?){
+        viewModelScope.launch {
+            runRepository.updateRunNotes(runId, notes ?: "")
+        }
+    }
+
+
 
     fun getRunById(runId: Long): LiveData<Run?> {
         return runRepository.getRunById(runId)
