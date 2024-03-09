@@ -43,6 +43,7 @@ class LocationViewModel @Inject constructor(
 
     private fun calculateDistance() {
         totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints.value)
+
     }
 
     fun resumeDistance() {

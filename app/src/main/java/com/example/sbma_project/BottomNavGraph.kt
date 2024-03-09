@@ -29,7 +29,6 @@ fun BottomNavGraph(
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
-    //distanceViewModel: DistanceViewModel,
 
     ) {
     NavHost(
@@ -52,6 +51,7 @@ fun BottomNavGraph(
         composable(route = BottomBarScreen.History.route) {
             History(
                 runViewModel = runViewModel,
+
                 )
         }
         composable(route = BottomBarScreen.Info.route) {

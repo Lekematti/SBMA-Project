@@ -1,21 +1,20 @@
 package com.example.sbma_project.graph
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -24,27 +23,53 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.repository.RunViewModel
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
+import kotlin.math.roundToInt
 
 @Composable
 fun RunHistoryGraph(runViewModel: RunViewModel) {
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
+    val displayMode = remember { mutableStateOf("distance") }
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
             runsState.value = runs
         }
     }
-    RunsGraph(runsState.value)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
+            Button(
+                onClick = {
+                    displayMode.value = if (displayMode.value == "distance") "time" else "distance"
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Toggle between distance and time")
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            RunsGraph(runsState.value, displayMode)
+        }
+    }
 }
+
 @Composable
-fun RunsGraph(runs: List<Run>) {
+fun RunsGraph(runs: List<Run>, displayMode: MutableState<String>) {
+    val displayModeState = rememberUpdatedState(displayMode.value)
+
     if (runs.isEmpty()) {
-        Text("No runs in history yet")
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("No runs in history yet")
+        }
     } else {
         Box(
             modifier = Modifier
@@ -56,59 +81,49 @@ fun RunsGraph(runs: List<Run>) {
                     LineChart(context)
                 },
                 modifier = Modifier
-                    .fillMaxSize()
-            ) { lineChart ->
-                setupLineChart(lineChart)
-                lineChart.data = getLineData(runs)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Display each run's details
-            LazyColumn {
-                items(runs) { run ->
-                    RunItem(run)
-                    Divider()
+                    .fillMaxSize(),
+                update = { lineChart ->
+                    setupLineChart(lineChart, displayModeState.value)
+                    lineChart.data = getLineData(runs, displayModeState.value)
+                    lineChart.invalidate() // Redraw the chart
                 }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+fun getLineData(runs: List<Run>, displayMode: String): LineData {
+    val sortedRuns = runs.sortedBy { it.createdAt }
+
+    val values = sortedRuns.mapIndexed { index, run ->
+        when (displayMode) {
+            "distance" -> run.distance?.let {
+                Entry(index.toFloat(), it.toFloat(), run.id)
             }
+            "time" -> Entry(index.toFloat(), run.durationInMillis.toFloat(), run.id)
+            else -> null
         }
-    }
-}
-@Composable
-fun RunItem(run: Run) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text("Run ${run.id}")
-        Spacer(modifier = Modifier.height(4.dp))
-        Text("Date: ${run.createdAt}")
-        Text("Distance: ${run.distance} m")
-        Text("Time: ${run.durationInMillis} seconds")
-        Text("Speed: ${run.speed} km/h")
-    }
-}
-
-fun getLineData(runs: List<Run>): LineData {
-    var cumulativeDistance = 0f
-    var cumulativeTime = 0f
-
-    val values = runs.mapNotNull { run ->
-        run.distance?.let {
-            cumulativeDistance += it
-            cumulativeTime += run.durationInMillis / 1000f // convert milliseconds to seconds
-            Log.d("Stats", "Run ${run.id} - Distance: $it, Cumulative Distance: $cumulativeDistance, Time: ${run.durationInMillis / 1000} seconds, Cumulative Time: $cumulativeTime seconds")
-            Entry(cumulativeDistance, cumulativeTime)
-        }
-    }
-
-    val dataSet = LineDataSet(values, "Cumulative Time vs. Cumulative Distance")
+    }.filterNotNull()
+    val dataSet = LineDataSet(values, "Runs")
     dataSet.color = Color.Blue.toArgb()
-    dataSet.valueTextColor = Color.Red.toArgb()
+    dataSet.valueTextColor = Color.Green.toArgb() // Id color
+
+    // Customize the appearance of data points
+    dataSet.setDrawCircles(true)
+    dataSet.circleRadius = 5f
+    dataSet.setCircleColor(Color.Blue.toArgb())
+
+    // Set value formatter to display run id
+    dataSet.valueFormatter = object : ValueFormatter() {
+        override fun getPointLabel(entry: Entry): String {
+            return entry.data.toString()
+        }
+    }
     return LineData(dataSet)
 }
-fun setupLineChart(lineChart: LineChart) {
+fun setupLineChart(lineChart: LineChart, displayMode: String) {
+
     // Customize the chart appearance
     lineChart.setDrawGridBackground(false)
     lineChart.description.isEnabled = false
@@ -116,15 +131,38 @@ fun setupLineChart(lineChart: LineChart) {
     lineChart.isDragEnabled = true
     lineChart.setScaleEnabled(true)
     lineChart.setPinchZoom(true)
-    lineChart.setBackgroundColor(Color.White.toArgb())
+    lineChart.setBackgroundColor(Color.Black.toArgb())
 
-    // Customize the chart legend
+    // Enable x and y axis labels
+    lineChart.xAxis.isEnabled = false
+    lineChart.axisLeft.isEnabled = true
+    lineChart.axisRight.isEnabled = false
+
+    // Set minimum and maximum values for y-axis (distance)
+    lineChart.axisLeft.axisMinimum = 0f // your minimum value
+
+    // Set minimum and maximum values for x-axis (time)
+    lineChart.xAxis.axisMinimum = 0f // your minimum value
+
+    // Set y axis value formatter to display distance in meters or time in seconds
+    lineChart.axisLeft.valueFormatter = object : ValueFormatter() {
+        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+            return when (displayMode) {
+                "distance" -> value.roundToInt().toString() + "m"
+                "time" -> value.roundToInt().toString() + "s"
+                else -> super.getAxisLabel(value, axis)
+            }
+        }
+    }
+
+// Set color of x and y axis labels to blue
+    lineChart.xAxis.textColor = Color.Cyan.toArgb()
+    lineChart.axisLeft.textColor = Color.Cyan.toArgb()
+    lineChart.axisRight.textColor = Color.Cyan.toArgb()
+
+    // Customize legend
     val legend: Legend = lineChart.legend
     legend.isEnabled = true
     legend.textSize = 12f
-
-    // Customize the chart description
-    val description = Description()
-    description.text = "Average Speed vs. Run Index"
-    lineChart.description = description
+    legend.textColor = Color.Cyan.toArgb() // Set legend text color to blue
 }

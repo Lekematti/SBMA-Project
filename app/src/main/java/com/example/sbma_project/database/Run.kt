@@ -23,8 +23,8 @@ data class Run(
     val routePath : List<LatLng>?,
     val rating : Int?,
     val notes : String?,
-    val speed: Int?,
-    val distance: Int?,
+    val speed: Double?,
+    val distance: Double?,
     val steps: Int?,
     val stepLength: Double?,
 

@@ -38,7 +38,7 @@ fun MainScreen(
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
-    //distanceViewModel: DistanceViewModel,
+
 
     ) {
     val navController = rememberNavController()
@@ -59,7 +59,7 @@ fun MainScreen(
                 locationViewModel = locationViewModel,
                 runViewModel = runViewModel,
                 fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                //distanceViewModel = distanceViewModel
+
             )
         }
     }

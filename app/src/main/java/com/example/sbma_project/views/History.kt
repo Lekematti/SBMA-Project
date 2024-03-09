@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.graph.RunHistoryGraph
 import com.example.sbma_project.repository.RunViewModel
@@ -50,17 +52,16 @@ fun History(runViewModel: RunViewModel) {
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryData by remember { mutableStateOf("") }
-
     val showDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
-    
+    val showInfo = remember {mutableStateOf(false) }
+
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
             runsState.value = runs
         }
     }
-    
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,13 +71,34 @@ fun History(runViewModel: RunViewModel) {
             //Graphs
             Card(
                 modifier = Modifier
-                    .height(200.dp)
+                    .height(300.dp)
+                    .width(400.dp)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     RunHistoryGraph(runViewModel = runViewModel)
-                    //Text(text = "Graph placeholder", modifier = Modifier.align(Alignment.TopCenter))
                 }
+            }
+            Text(
+                text = "Click here for more info",
+                fontSize = 10.sp,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .clickable {
+                        showInfo.value = true
+                    }
+            )
+            if (showInfo.value) {
+                AlertDialog(
+                    onDismissRequest = { showInfo.value = false },
+                    title = { Text("Graph Info") },
+                    text = { Text("This graph shows the progression of your runs. The lower your time and the higher your distance the better.") },
+                    confirmButton = {
+                        Button(onClick = { showInfo.value = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
             }
             // run stats items
             LazyColumn {
@@ -109,15 +131,11 @@ fun History(runViewModel: RunViewModel) {
                                         showDialog
                                     )
                                 }
-
                                 ) {
                                     DeleteIcon()
                                 }
                             }
-
-
                             Spacer(modifier = Modifier.height(8.dp))
-
 
                             Text(text = "Duration: ${runs.durationInMillis}s")
                             Text(text = "route LatLng size: ${runs.routePath?.size}")
@@ -126,8 +144,6 @@ fun History(runViewModel: RunViewModel) {
                     }
                 }
             }
-
-
         } else {
             // Detailed view
             Column(
@@ -142,23 +158,18 @@ fun History(runViewModel: RunViewModel) {
                         .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-
-
                     Text("Graph placeholder for $selectedHistoryData")
                 }
-
 
                 Text(
                     text = "Detailed View for $selectedHistoryData",
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-
                 Text(
                     text = "More detailed information here...",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-
 
                 Text(
                     text = "Back",
