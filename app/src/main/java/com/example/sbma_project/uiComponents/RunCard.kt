@@ -208,9 +208,8 @@ fun RunCard(
                     contentColor = MaterialTheme.colorScheme.surface
                 )
                 //End button
-                Button(colors = stopButtonColor,
-
-
+                Button(
+                    colors = stopButtonColor,
                     onClick = {
                         Intent(context, RunningService::class.java).also {
                             it.action = RunningService.Actions.STOP.toString()
