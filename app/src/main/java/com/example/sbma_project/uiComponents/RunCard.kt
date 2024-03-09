@@ -153,6 +153,13 @@ fun RunCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // colors for start and pause
+            var buttonColor by remember { mutableStateOf(Color.Green) }
+            val mainButtonColors = ButtonDefaults.buttonColors(
+                containerColor = buttonColor,
+                contentColor = MaterialTheme.colorScheme.surface
+            )
+
             //Buttons
             Row(
                 modifier = Modifier
@@ -162,7 +169,7 @@ fun RunCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 // Start/pause button
-                Button(
+                Button(colors = mainButtonColors,
                     onClick = {
                         Intent(context, RunningService::class.java).also {
                             it.action = RunningService.Actions.START.toString()
@@ -176,7 +183,9 @@ fun RunCard(
                             RunningState.Paused -> locationViewModel.resumeDistance()
                             else -> {}
                         }
-                    }) {
+                    }
+
+                ) {
                     Icon(
                         painter = if (locationViewModel.runningState == RunningState.Running) painterResource(
                             R.drawable.pause
@@ -184,10 +193,24 @@ fun RunCard(
                         contentDescription = if (locationViewModel.runningState == RunningState.Running) "pause button" else "play button"
                     )
                 }
+                // colors change for start and pause
+                buttonColor = when (locationViewModel.runningState) {
+                    RunningState.Running -> Color.Yellow
+                    else -> Color.Green
+                }
+
                 Spacer(modifier = Modifier.width(16.dp))
 
+
+                // color for stop button
+                val stopButtonColor = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = MaterialTheme.colorScheme.surface
+                )
                 //End button
-                Button(
+                Button(colors = stopButtonColor,
+
+
                     onClick = {
                         Intent(context, RunningService::class.java).also {
                             it.action = RunningService.Actions.STOP.toString()
@@ -213,6 +236,7 @@ fun RunCard(
                         showDialog = true
                     },
                     enabled = stopButtonEnabled
+
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.stop),
