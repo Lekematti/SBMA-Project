@@ -23,6 +23,10 @@ data class Run(
     val routePath : List<LatLng>?,
     val rating : Int?,
     val notes : String?,
+    val speed: Double?,
+    val distance: Double?,
+    val steps: Int?,
+    val stepLength: Double?,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date,

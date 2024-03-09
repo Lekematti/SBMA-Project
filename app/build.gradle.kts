@@ -101,6 +101,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-fitness:21.1.0")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
+    //Graph
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
