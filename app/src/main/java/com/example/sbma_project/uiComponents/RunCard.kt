@@ -3,6 +3,7 @@ package com.example.sbma_project.uiComponents
 //import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -288,7 +289,6 @@ fun RunCard(
                                     maxLines = 4
                                 )
                             }
-
                         }
                     },
                     confirmButton = {
@@ -305,18 +305,15 @@ fun RunCard(
                                     }
                                     val totalTimeInSeconds = locationViewModel.time.value
                                     avgSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
-                                    val roundedAvgSpeed = String.format("%.2f", avgSpeed).toFloat()
-                                   //val averageSpeed = speedList.average()
-
-
+                                    val roundedAvgSpeed = String.format("%.2f", avgSpeed)
                                     runViewModel.createRun(
-                                        time,
-                                        pathPoints,
-                                        speedList,
-                                        rating,
-                                        enteredText,
-                                        speedTimeStampsList,
-                                        roundedAvgSpeed,
+                                        startTime = time,
+                                        routePath = pathPoints,
+                                        speedList = speedList,
+                                        rating = rating,
+                                        notes = enteredText,
+                                        speedTimestamps = speedTimeStampsList,
+                                        avgSpeed = roundedAvgSpeed.toFloat(),
                                     )
                                 }
                                 resetStateAndHideDialog()
@@ -353,7 +350,6 @@ fun RunCard(
 
 @Composable
 fun CustomDivider(vertical: Boolean) {
-
     Divider(
         color = Color.Gray,
         modifier =

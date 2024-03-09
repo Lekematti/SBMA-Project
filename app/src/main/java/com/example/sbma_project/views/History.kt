@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sbma_project.R
+import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.repository.RunViewModel
 import java.text.SimpleDateFormat
@@ -49,7 +50,11 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun History(runViewModel: RunViewModel) {
+fun History(
+    settingsActionListener: SettingsActionListener,
+    runViewModel: RunViewModel,
+    locationPermissionState : String,
+    ) {
     // Define sorting options
     val sortingOptions = listOf(
         "Created Date Ascending",
@@ -60,11 +65,14 @@ fun History(runViewModel: RunViewModel) {
 
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
-    var selectedHistoryId by remember { mutableLongStateOf(-1L) } // Initialize with a default value
+    var selectedHistoryId by remember { mutableLongStateOf(-1L) }
 
     val showDialog = remember { mutableStateOf(false) }
     val showSortDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
+
+    // Remember the last selected sorting option
+    var selectedSortOption by remember { mutableStateOf(sortingOptions.first()) }
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
@@ -166,12 +174,18 @@ fun History(runViewModel: RunViewModel) {
         } else {
             // Detailed view
             selectedHistoryId.takeIf { it != -1L }?.let { id ->
-                DetailedHistoryView(runViewModel = runViewModel, runId = id) {
+                DetailedHistoryView(
+                    settingsActionListener = settingsActionListener,
+                    runViewModel = runViewModel,
+                    runId = id,
+                    locationPermissionState = locationPermissionState,
+                    ) {
                     showDetailView = false // Close the detailed view
                 }
             }
         }
 
+        // delete dialog
         if (showDialog.value) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
@@ -201,7 +215,6 @@ fun History(runViewModel: RunViewModel) {
             )
         }
 
-
         if (showSortDialog.value) {
             // Sorting dialog
             AlertDialog(
@@ -216,6 +229,7 @@ fun History(runViewModel: RunViewModel) {
                         sortingOptions.forEachIndexed { index, option ->
                             Button(
                                 onClick = {
+                                    selectedSortOption = option
                                     // sorting based on the selected option
                                     when (option) {
                                         "Created Date Ascending" -> {
@@ -256,8 +270,6 @@ fun History(runViewModel: RunViewModel) {
                 }
             )
         }
-
-
     }
 }
 

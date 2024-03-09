@@ -40,13 +40,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.sbma_project.R
+import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.EmojiButton
 import com.example.sbma_project.uiComponents.emojiToRating
+import com.example.sbma_project.uiComponents.formatTime
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -61,6 +64,8 @@ import java.util.Date
 
 @Composable
 fun DetailedHistoryView(
+    settingsActionListener: SettingsActionListener,
+    locationPermissionState : String,
     runViewModel: RunViewModel,
     runId: Long,
     onBack: () -> Unit
@@ -154,17 +159,12 @@ fun DetailedHistoryView(
             }
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
-
-
         runDetails.value?.let { run ->
-
             val initialPosition = run.routePath?.firstOrNull()?.let {
                 LatLng(it.latitude, it.longitude)
             }
-
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -199,75 +199,123 @@ fun DetailedHistoryView(
                         DeleteIcon(Modifier.size(48.dp))
                     }
                 }
-
-
                 Card {
                     Column(
                         modifier = Modifier.padding(8.dp)
                     ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            Text(text = "* Tap to edit", fontStyle = FontStyle.Italic)
+                        }
+
                         Card(
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .fillMaxHeight(0.3f)
                                 .fillMaxWidth()
                         ) {
-                            if (!run.routePath.isNullOrEmpty()) {
-                                initialPosition?.let {
-                                    if (isFirstTime) { // If it's the first time, set camera position
-                                        LaunchedEffect(key1 = run.routePath.first()){
-                                            cameraState.centerOnLocation(run.routePath.first(), zoom = 20f)
-                                            isFirstTime = false
+
+                            if (locationPermissionState == "loading"){
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            } else if (locationPermissionState == "success") {
+                                if (!run.routePath.isNullOrEmpty()) {
+                                    initialPosition?.let {
+                                        if (isFirstTime) { // If it's the first time, set camera position
+                                            LaunchedEffect(key1 = run.routePath.first()){
+                                                cameraState.centerOnLocation(run.routePath.first(), zoom = 20f)
+                                                isFirstTime = false
+                                            }
+                                        }
+                                        GoogleMap(
+                                            cameraPositionState = cameraState,
+                                            properties = MapProperties(
+                                                isMyLocationEnabled = true,
+                                                mapType = MapType.HYBRID,
+                                                isTrafficEnabled = true
+                                            ),
+                                        ) {
+                                            // Draw polyline
+                                            DrawPolyline(run.routePath)
+
+                                            // marker for start point
+                                            if (run.routePath.isNotEmpty()) {
+                                                Marker(
+                                                    state = MarkerState(
+                                                        LatLng(
+                                                            run.routePath.first().latitude,
+                                                            run.routePath.first().longitude
+                                                        )
+                                                    ),
+                                                    title = "Start",
+                                                    icon = BitmapDescriptorFactory.defaultMarker(
+                                                        BitmapDescriptorFactory.HUE_CYAN
+                                                    )
+                                                )
+                                            }
+
+                                            // marker for finish point
+                                            if (run.routePath.isNotEmpty()) {
+                                                Marker(
+                                                    state = MarkerState(
+                                                        LatLng(
+                                                            run.routePath.last().latitude,
+                                                            run.routePath.last().longitude
+                                                        )
+                                                    ),
+                                                    title = "Finish",
+                                                    icon = BitmapDescriptorFactory.defaultMarker(
+                                                        BitmapDescriptorFactory.HUE_GREEN
+                                                    )
+                                                )
+                                            }
                                         }
                                     }
-                                    GoogleMap(
-                                        cameraPositionState = cameraState,
-                                        properties = MapProperties(
-                                            isMyLocationEnabled = true,
-                                            mapType = MapType.HYBRID,
-                                            isTrafficEnabled = true
-                                        ),
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterHorizontally)
+                                            .fillMaxSize()
                                     ) {
-                                        // Draw polyline
-                                        DrawPolyline(run.routePath)
-
-                                        // marker for start point
-                                        if (run.routePath.isNotEmpty()) {
-                                            Marker(
-                                                state = MarkerState(
-                                                    LatLng(
-                                                        run.routePath.first().latitude,
-                                                        run.routePath.first().longitude
-                                                    )
-                                                ),
-                                                title = "Start",
-                                                icon = BitmapDescriptorFactory.defaultMarker(
-                                                    BitmapDescriptorFactory.HUE_CYAN
-                                                )
-                                            )
-                                        }
-
-                                        // marker for finish point
-                                        if (run.routePath.isNotEmpty()) {
-                                            Marker(
-                                                state = MarkerState(
-                                                    LatLng(
-                                                        run.routePath.last().latitude,
-                                                        run.routePath.last().longitude
-                                                    )
-                                                ),
-                                                title = "Finish",
-                                                icon = BitmapDescriptorFactory.defaultMarker(
-                                                    BitmapDescriptorFactory.HUE_GREEN
-                                                )
-                                            )
-                                        }
+                                        Text(
+                                            text = "No routes were detected.",
+                                            modifier = Modifier.align(Alignment.Center),
+                                        )
                                     }
                                 }
                             } else {
-                                Text(text = "No routes were detected.")
-                            }
-                        }
+                                //grant permission screen
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(24.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text("We need permissions to view the routes on the map")
+                                    Spacer(modifier = Modifier.height(24.dp))
 
+                                    Button(
+                                        onClick = {
+                                            settingsActionListener.openAppSettings()
+                                        }
+                                    ) {
+                                        Text("Open Settings")
+                                    }
+                                }
+                            }
+
+
+
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -281,7 +329,7 @@ fun DetailedHistoryView(
                                     .weight(0.5f),
                                 icon = painterResource(id = R.drawable.timer_24px),
                                 title = "Duration",
-                                description = "${run.durationInMillis}"
+                                description = formatTime(run.durationInMillis)
                             )
                             DetailCardItem(
                                 modifier = Modifier
@@ -307,7 +355,7 @@ fun DetailedHistoryView(
                                     .weight(0.5f),
                                 icon = painterResource(id = R.drawable.speed_24px),
                                 title = "Average Speed",
-                                description = "${run.avgSpeed}"
+                                description = "${run.avgSpeed}km/hr"
                             )
                         }
                         Row {
@@ -336,7 +384,7 @@ fun DetailedHistoryView(
                                         .padding(16.dp)
                                         .weight(0.5f),
                                     icon = painterResource(id = R.drawable.relax_24px),
-                                    title = "Post Run Feeling",
+                                    title = "Post Run Feeling *",
                                     description = ratingToEmoji(rating)
                                 )
                             } ?: DetailCardItem(
@@ -345,7 +393,7 @@ fun DetailedHistoryView(
                                     .padding(16.dp)
                                     .weight(0.5f),
                                 icon = painterResource(id = R.drawable.relax_24px),
-                                title = "Post Run Feeling",
+                                title = "Post Run Feeling *",
                                 description = ""
                             )
                             DetailCardItem(
@@ -487,7 +535,7 @@ fun DetailedHistoryView(
                                 .clickable { showNoteEditDialog() }
                                 .padding(16.dp),
                             icon = painterResource(id = R.drawable.description_24px),
-                            title = "Notes",
+                            title = "Notes *",
                             description = it
                         )
                     }
@@ -498,7 +546,7 @@ fun DetailedHistoryView(
                                 .padding(8.dp),
                             horizontalArrangement = Arrangement.End,
                         ) {
-                            Text(text = "last modified at: ${formatDate(it)}")
+                            Text(text = "last modified: ${formatDate(it)}")
                         }
                     }
 
@@ -510,8 +558,6 @@ fun DetailedHistoryView(
         ) {
             CircularProgressIndicator()
         }
-
-
     }
 }
 

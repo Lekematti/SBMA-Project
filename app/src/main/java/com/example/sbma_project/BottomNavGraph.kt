@@ -51,7 +51,9 @@ fun BottomNavGraph(
         }
         composable(route = BottomBarScreen.History.route) {
             History(
+                settingsActionListener = settingsActionListener,
                 runViewModel = runViewModel,
+                locationPermissionState = locationPermissionState,
                 )
         }
         composable(route = BottomBarScreen.Info.route) {

@@ -43,7 +43,8 @@ import com.google.maps.android.compose.Polyline
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Home(
-    locationPermissionState: String, currentPosition: LatLng? = null,
+    locationPermissionState: String,
+    currentPosition: LatLng? = null,
     cameraState: CameraPositionState? = null,
     pathPoints: List<LatLng>? = null,
     settingsActionListener: SettingsActionListener,
