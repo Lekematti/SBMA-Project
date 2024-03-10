@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.sbma_project.distance.DistanceCalculator
+import com.example.sbma_project.calculators.DistanceCalculator
 import com.google.android.gms.maps.model.LatLng
 
 @Composable

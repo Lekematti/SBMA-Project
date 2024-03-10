@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.database.RunDao
-import com.example.sbma_project.distance.DistanceCalculator
+import com.example.sbma_project.calculators.DistanceCalculator
 import com.example.sbma_project.uiComponents.calculateAverageSpeed
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel

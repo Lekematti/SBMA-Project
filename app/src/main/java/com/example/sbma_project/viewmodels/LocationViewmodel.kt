@@ -1,11 +1,14 @@
 package com.example.sbma_project.viewmodels
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sbma_project.distance.DistanceCalculator
+import com.example.sbma_project.calculators.DistanceCalculator
+import com.example.sbma_project.calculators.StepCounter
 import com.example.sbma_project.domain.GetLocationUseCase
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val getLocationUseCase: GetLocationUseCase,
+    @SuppressLint("StaticFieldLeak") private val context: Context
 ) : ViewModel(){
 
     var totalTimeInHours: Float = 0f
@@ -37,6 +41,7 @@ class LocationViewModel @Inject constructor(
     private val _pathPoints: MutableStateFlow<List<LatLng>> = MutableStateFlow(emptyList())
     val pathPoints = _pathPoints.asStateFlow()
 
+    //DISTANCE
     // Variable to keep the total distance that can be observed from UI
     private var totalDistance = 0.0
     private var isDistanceUpdateEnabled = true // Flag to control distance updates
@@ -75,6 +80,7 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Running
         _stopButtonEnabled.value = true
         startLocationUpdates()
+        StepCounter.start(context)
     }
 
 
@@ -83,6 +89,7 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Paused
         _stopButtonEnabled.value = false
         _speed.value = 0f
+        StepCounter.pause()
     }
 
     // Function to resume the run
@@ -90,6 +97,7 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Running
         _stopButtonEnabled.value = true
         startLocationUpdates()
+        StepCounter.resume()
     }
 
     // Function to finish the run
@@ -99,6 +107,7 @@ class LocationViewModel @Inject constructor(
         locationJob?.cancel()
         totalTimeInHours = time.value / 3600f
         _speed.value = 0f
+        StepCounter.stop()
     }
 
 
