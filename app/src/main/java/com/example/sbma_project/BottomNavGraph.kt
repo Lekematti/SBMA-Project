@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.repository.RunViewModel
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.views.History
 import com.example.sbma_project.views.Home
@@ -29,7 +28,6 @@ fun BottomNavGraph(
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
-    //distanceViewModel: DistanceViewModel,
 
     ) {
     NavHost(
@@ -46,7 +44,6 @@ fun BottomNavGraph(
                 locationViewModel = locationViewModel,
                 runViewModel = runViewModel,
                 fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                //distanceViewModel = distanceViewModel
             )
         }
         composable(route = BottomBarScreen.History.route) {
@@ -54,6 +51,7 @@ fun BottomNavGraph(
                 settingsActionListener = settingsActionListener,
                 runViewModel = runViewModel,
                 locationPermissionState = locationPermissionState,
+
                 )
         }
         composable(route = BottomBarScreen.Info.route) {

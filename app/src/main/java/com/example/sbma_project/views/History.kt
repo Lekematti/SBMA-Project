@@ -43,7 +43,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sbma_project.R
 import com.example.sbma_project.SettingsActionListener
+import androidx.compose.ui.unit.sp
 import com.example.sbma_project.database.Run
+import com.example.sbma_project.graph.RunHistoryGraph
 import com.example.sbma_project.repository.RunViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -66,13 +68,14 @@ fun History(
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryId by remember { mutableLongStateOf(-1L) }
-
+    var selectedHistoryData by remember { mutableStateOf("") }
     val showDialog = remember { mutableStateOf(false) }
     val showSortDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
 
     // Remember the last selected sorting option
     var selectedSortOption by remember { mutableStateOf(sortingOptions.first()) }
+    val showInfo = remember {mutableStateOf(false) }
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
@@ -89,11 +92,12 @@ fun History(
             //Graphs
             Card(
                 modifier = Modifier
-                    .height(200.dp)
+                    .height(300.dp)
+                    .width(400.dp)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Graph placeholder", modifier = Modifier.align(Alignment.TopCenter))
+                    RunHistoryGraph(runViewModel = runViewModel)
                 }
             }
             Row(
@@ -120,6 +124,26 @@ fun History(
                         )
                     }
                 }
+            Text(
+                text = "Click here for more info",
+                fontSize = 10.sp,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .clickable {
+                        showInfo.value = true
+                    }
+            )
+            if (showInfo.value) {
+                AlertDialog(
+                    onDismissRequest = { showInfo.value = false },
+                    title = { Text("Graph Info") },
+                    text = { Text("This graph shows the progression of your runs. The lower your time and the higher your distance the better.") },
+                    confirmButton = {
+                        Button(onClick = { showInfo.value = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
             }
             // run stats items
             LazyColumn {
@@ -158,6 +182,13 @@ fun History(
                                         .size(32.dp),
                                     shape = RoundedCornerShape(8.dp),
                                     elevation = CardDefaults.cardElevation(8.dp),
+                                IconButton(onClick = {
+                                    showDeleteConfirmationDialog(
+                                        runs.id,
+                                        runIdToDelete,
+                                        showDialog
+                                    )
+                                }
                                 ) {
                                     DeleteIcon(Modifier.size(32.dp))
                                 }
@@ -182,6 +213,38 @@ fun History(
                     ) {
                     showDetailView = false // Close the detailed view
                 }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Graph placeholder for $selectedHistoryData")
+                }
+
+                Text(
+                    text = "Detailed View for $selectedHistoryData",
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    text = "More detailed information here...",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = "Back",
+                    modifier = Modifier
+                        .clickable { showDetailView = false }
+                        .padding(top = 16.dp)
+                        .background(color = Color.LightGray)
+                )
             }
         }
 

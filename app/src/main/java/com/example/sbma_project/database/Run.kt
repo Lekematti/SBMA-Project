@@ -26,7 +26,9 @@ data class Run(
     val speedList: List<Float>?,
     val speedTimestamps: List<Long>?,
     val avgSpeed :Float?,
-
+    val distance: Double?,
+    val steps: Int?,
+    val stepLength: Double?,
 
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdAt: Date,
