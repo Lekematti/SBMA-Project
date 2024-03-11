@@ -178,7 +178,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
             sensorManager?.registerListener(StepCounter, stepSensor, SensorManager.SENSOR_DELAY_NORMAL)
         }
     }
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+  /*  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         // You can handle changes in sensor accuracy here if needed
     }
 
@@ -188,7 +188,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
           val currentSteps = totalSteps.toInt() - previousTotalSteps.toInt()
 
       }
-    }
+    }*/
 
 
     override fun openAppSettings() {
