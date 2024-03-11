@@ -28,6 +28,24 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
     suspend fun deleteRunById(runId: Long) {
         runDao.deleteRunById(runId)
     }
+
+    fun getRunById(runId: Long): LiveData<Run?> {
+        return runDao.getRunById(runId)
+    }
+
+    suspend fun updateRunRating(runId: Long, rating: Int){
+        return runDao.updateRunRating(runId, rating)
+    }
+
+    suspend fun updateRunNotes(runId: Long, notes: String?){
+        return runDao.updateRunNotes(runId, notes ?: "")
+    }
+
+    suspend fun updateModifiedDate(runId: Long, newModifiedAt : Date){
+        return runDao.updateModifiedAt(runId, newModifiedAt)
+    }
+
+
 }
 
 @HiltViewModel
@@ -35,28 +53,28 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
     ViewModel() {
     val runs: LiveData<List<Run>> = runRepository.getAllRuns()
 
-
     fun createRun(
         startTime: Long,
         routePath: List<LatLng>,
+        speedList: List<Float>,
         rating : Int? = null,
         notes : String? = null,
-        stepLength : Double? = null,
-        steps : Int? = null,
+        speedTimestamps: List<Long>?,
+        avgSpeed :Float?,
     ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
-            // Calculate the total distance before creating the Run object
             val totalDistance = DistanceCalculator.calculateTotalDistance(routePath)
-            val avgSpeed = calculateAverageSpeed(totalDistance, startTime)
-            Log.d("avg","$avgSpeed")
-            val newRun = Run(durationInMillis = startTime,
+            val newRun = Run(
+                durationInMillis = startTime,
                 routePath = routePath,
                 createdAt = currentTimestamp,
                 modifiedAt = null,
                 rating = rating,
                 notes = notes,
-                speed = avgSpeed.toDouble(),
+                speedList = speedList,
+                speedTimestamps = speedTimestamps,
+                avgSpeed = avgSpeed,
                 distance = totalDistance,
                 stepLength = stepLength,
                 steps = steps,
@@ -73,6 +91,27 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         }
     }
 
+     fun updateRunRating(runId: Long, rating: Int){
+         viewModelScope.launch {
+             runRepository.updateRunRating(runId, rating)
+         }
+    }
+
+    fun updateRunNotes(runId: Long, notes: String?){
+        viewModelScope.launch {
+            runRepository.updateRunNotes(runId, notes ?: "")
+        }
+    }
+
+    fun getRunById(runId: Long): LiveData<Run?> {
+        return runRepository.getRunById(runId)
+    }
+
+    fun updateModifiedDate(runId: Long, newModifiedAt: Date){
+        viewModelScope.launch {
+            runRepository.updateModifiedDate(runId, newModifiedAt)
+        }
+    }
 }
 
 

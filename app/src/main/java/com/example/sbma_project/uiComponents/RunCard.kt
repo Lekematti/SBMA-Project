@@ -1,8 +1,9 @@
 package com.example.sbma_project.uiComponents
 
+//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.content.Intent
 import android.os.Build
-import android.widget.Toast
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,12 +49,10 @@ import com.example.sbma_project.R
 import com.example.sbma_project.distance.DistanceCalculator
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.services.RunningService
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
-
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -65,12 +64,16 @@ fun RunCard(
     pathPoints: List<LatLng>?,
     fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
+    val speedList by locationViewModel.speedList.collectAsState()
+    val speedTimeStampsList by locationViewModel.speedTimestamps.collectAsState()
+
     var showDialog by remember { mutableStateOf(false) }
     var selectedEmoji by remember { mutableStateOf("") }
     val time by locationViewModel.time.collectAsState()
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var avgSpeed : Float? = 0.0F
 
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
@@ -81,6 +84,14 @@ fun RunCard(
         locationViewModel.resetDistance()
 
     }
+
+    fun Float.round(decimals: Int): Float {
+        var multiplier = 1.0f
+        repeat(decimals) { multiplier *= 10 }
+        return kotlin.math.round(this * multiplier) / multiplier
+    }
+
+
 
     Box(
         modifier = modifier,
@@ -216,22 +227,6 @@ fun RunCard(
                             it.action = RunningService.Actions.STOP.toString()
                             context.startService(it)
                         }
-                        // Retrieve total distance and total time from LocationViewModel
-                        val totalDistance = pathPoints?.let {
-                            DistanceCalculator.calculateTotalDistance(
-                                it
-                            )
-                        }
-                        val totalTimeInSeconds = locationViewModel.time.value
-
-                        val averageSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
-
-                        Toast.makeText(
-                            context,
-                            "Average Speed: $averageSpeed km/hr",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
                         locationViewModel.finishRun()
                         showDialog = true
                     },
@@ -318,7 +313,6 @@ fun RunCard(
                                     maxLines = 4
                                 )
                             }
-
                         }
                     },
                     confirmButton = {
@@ -328,11 +322,22 @@ fun RunCard(
                                     selectedEmoji
                                 ).value
                                 if (pathPoints != null) {
+                                    val totalDistance = pathPoints?.let {
+                                        DistanceCalculator.calculateTotalDistance(
+                                            it
+                                        )
+                                    }
+                                    val totalTimeInSeconds = locationViewModel.time.value
+                                    avgSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
+                                    val roundedAvgSpeed = String.format("%.2f", avgSpeed)
                                     runViewModel.createRun(
-                                        time,
-                                        pathPoints,
-                                        rating,
-                                        enteredText
+                                        startTime = time,
+                                        routePath = pathPoints,
+                                        speedList = speedList,
+                                        rating = rating,
+                                        notes = enteredText,
+                                        speedTimestamps = speedTimeStampsList,
+                                        avgSpeed = roundedAvgSpeed.toFloat(),
                                     )
                                 }
                                 resetStateAndHideDialog()
@@ -369,7 +374,6 @@ fun RunCard(
 
 @Composable
 fun CustomDivider(vertical: Boolean) {
-
     Divider(
         color = Color.Gray,
         modifier =

@@ -43,7 +43,8 @@ import com.google.maps.android.compose.Polyline
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun Home(
-    locationPermissionState: String, currentPosition: LatLng? = null,
+    locationPermissionState: String,
+    currentPosition: LatLng? = null,
     cameraState: CameraPositionState? = null,
     pathPoints: List<LatLng>? = null,
     settingsActionListener: SettingsActionListener,
@@ -77,9 +78,6 @@ fun Home(
                         }
                     }
                 }
-                //when marker is needed (for later)
-                val marker = currentPosition?.let { LatLng(it.latitude, currentPosition.longitude) }
-
                 if (cameraState != null) {
                     Column {
                         GoogleMap(

@@ -49,7 +49,7 @@ fun CardTime(modifier: Modifier, locationViewModel: LocationViewModel) {
     }
 }
 
-private fun formatTime(seconds: Long): String {
+fun formatTime(seconds: Long): String {
     val hours = seconds / 3600
     val minutes = seconds % 3600 / 60
     val secs = seconds % 60
