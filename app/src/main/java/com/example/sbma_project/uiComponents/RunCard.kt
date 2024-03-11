@@ -338,6 +338,8 @@ fun RunCard(
                                         notes = enteredText,
                                         speedTimestamps = speedTimeStampsList,
                                         avgSpeed = roundedAvgSpeed.toFloat(),
+                                        stepLength = null,
+                                        steps = null,
                                     )
                                 }
                                 resetStateAndHideDialog()

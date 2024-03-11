@@ -61,6 +61,8 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         notes : String? = null,
         speedTimestamps: List<Long>?,
         avgSpeed :Float?,
+        stepLength : Double?,
+        steps: Int?,
     ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
