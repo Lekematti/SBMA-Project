@@ -1,4 +1,4 @@
-package com.example.sbma_project.distance
+package com.example.sbma_project.calculators
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng

@@ -44,9 +44,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
-import com.example.sbma_project.distance.DistanceCalculator
+import com.example.sbma_project.calculators.DistanceCalculator
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.services.RunningService
 import com.example.sbma_project.viewmodels.LocationViewModel
@@ -62,7 +61,6 @@ fun RunCard(
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
     pathPoints: List<LatLng>?,
-    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
     val speedList by locationViewModel.speedList.collectAsState()
     val speedTimeStampsList by locationViewModel.speedTimestamps.collectAsState()
@@ -82,7 +80,6 @@ fun RunCard(
         locationViewModel.resetTime()
         locationViewModel.resetPathPoints()
         locationViewModel.resetDistance()
-
     }
 
     fun Float.round(decimals: Int): Float {
@@ -154,11 +151,10 @@ fun RunCard(
                 CustomDivider(vertical = true)
 
                 //Second Row Second Column
-                CardHeartBeat(
+                CardSteps(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
-                    fitApiHelper = fitApiHelper // Pass FitApiHelper instance
                 )
             }
 
@@ -190,8 +186,10 @@ fun RunCard(
                             RunningState.Running -> locationViewModel.pauseRun()
                             RunningState.Paused -> locationViewModel.resumeRun()
                             RunningState.Stopped -> locationViewModel.startRun()
+
                             RunningState.Paused -> locationViewModel.pauseDistance()
-                            RunningState.Paused -> locationViewModel.resumeDistance()
+                            RunningState.Running -> locationViewModel.resumeDistance()
+
                             else -> {}
                         }
                     }
@@ -212,7 +210,6 @@ fun RunCard(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-
                 // color for stop button
                 val stopButtonColor = ButtonDefaults.buttonColors(
                     containerColor = Color.Red,
@@ -220,8 +217,6 @@ fun RunCard(
                 )
                 //End button
                 Button(colors = stopButtonColor,
-
-
                     onClick = {
                         Intent(context, RunningService::class.java).also {
                             it.action = RunningService.Actions.STOP.toString()
@@ -331,6 +326,7 @@ fun RunCard(
                                     avgSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
                                     val roundedAvgSpeed = String.format("%.2f", avgSpeed)
                                     runViewModel.createRun(
+
                                         startTime = time,
                                         routePath = pathPoints,
                                         speedList = speedList,
@@ -339,7 +335,6 @@ fun RunCard(
                                         speedTimestamps = speedTimeStampsList,
                                         avgSpeed = roundedAvgSpeed.toFloat(),
                                         stepLength = null,
-                                        steps = null,
                                     )
                                 }
                                 resetStateAndHideDialog()

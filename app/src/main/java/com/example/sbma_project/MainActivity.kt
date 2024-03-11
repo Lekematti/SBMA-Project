@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.extension.hasLocationPermission
 import com.example.sbma_project.internetConnection.ConnectionStatus
 import com.example.sbma_project.internetConnection.currentConnectivityStatus
@@ -54,22 +53,22 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
-    private val fitApiHelper by lazy { FitApiHelper(this) }
 
     @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val locationViewModel: LocationViewModel by viewModels()
         val runViewModel: RunViewModel by viewModels()
+
         setContent {
             val pathPoints by locationViewModel.pathPoints.collectAsState()
             val permissionState = rememberMultiplePermissionsState(
                 permissions = listOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS,
+                    Manifest.permission.ACTIVITY_RECOGNITION,
                 )
             )
             val viewState by locationViewModel.viewState.collectAsState()
@@ -105,7 +104,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
 
                                 )
                             }
@@ -116,7 +114,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
 
                                 )
                             }
@@ -133,7 +130,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
 
                                 )
                             }
@@ -143,6 +139,38 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
             }
         }
     }
+
+/*    override fun onPause() {
+        super.onPause()
+        if (started) {
+            StepCounter.pause()
+            started = false
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        started = true
+        StepCounter.resume()
+        val stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+
+        if (stepSensor == null) {
+            Toast.makeText(this, "No Step Counter Sensor!", Toast.LENGTH_SHORT).show()
+        }else{
+            sensorManager?.registerListener(StepCounter, stepSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }*/
+  /*  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        // You can handle changes in sensor accuracy here if needed
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+      if(running){
+        totalSteps = event!!.values[0]
+          val currentSteps = totalSteps.toInt() - previousTotalSteps.toInt()
+
+      }
+    }*/
+
 
     override fun openAppSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
