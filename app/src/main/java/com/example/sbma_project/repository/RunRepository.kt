@@ -1,6 +1,5 @@
 package com.example.sbma_project.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +7,6 @@ import com.example.sbma_project.calculators.DistanceCalculator
 import com.example.sbma_project.calculators.StepCounter
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.database.RunDao
-import com.example.sbma_project.uiComponents.calculateAverageSpeed
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -45,8 +43,6 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
     suspend fun updateModifiedDate(runId: Long, newModifiedAt : Date){
         return runDao.updateModifiedAt(runId, newModifiedAt)
     }
-
-
 }
 
 @HiltViewModel
@@ -63,7 +59,6 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         speedTimestamps: List<Long>?,
         avgSpeed :Float?,
         stepLength : Double?,
-        steps: Int?,
     ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
