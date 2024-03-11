@@ -4,9 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sbma_project.calculators.DistanceCalculator
+import com.example.sbma_project.calculators.StepCounter
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.database.RunDao
-import com.example.sbma_project.calculators.DistanceCalculator
 import com.example.sbma_project.uiComponents.calculateAverageSpeed
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,15 +42,17 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         routePath: List<LatLng>,
         rating : Int? = null,
         notes : String? = null,
-        stepLength : Double? = null,
-        steps : Int? = null,
+        stepLength : Double?,
+
     ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
             // Calculate the total distance before creating the Run object
             val totalDistance = DistanceCalculator.calculateTotalDistance(routePath)
             val avgSpeed = calculateAverageSpeed(totalDistance, startTime)
-            Log.d("avg","$avgSpeed")
+            val steps = StepCounter.saveSteps()
+
+            Log.d("Steppi","$steps")
             val newRun = Run(durationInMillis = startTime,
                 routePath = routePath,
                 createdAt = currentTimestamp,

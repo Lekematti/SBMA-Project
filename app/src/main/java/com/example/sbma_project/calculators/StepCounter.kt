@@ -13,6 +13,7 @@ object StepCounter : SensorEventListener {
     private var previousTotalSteps = 0
     private var totalSteps = 0
     private var started = false
+    private var savedSteps = 0
 
     fun start(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -23,6 +24,12 @@ object StepCounter : SensorEventListener {
     }
     fun getStepCount(): Int {
         return totalSteps - previousTotalSteps
+    }
+    fun saveSteps(): Int {
+        val stepsSinceLastSave = totalSteps - previousTotalSteps
+        savedSteps += stepsSinceLastSave
+        previousTotalSteps = totalSteps
+        return savedSteps
     }
     fun pause() {
         sensorManager?.unregisterListener(this)

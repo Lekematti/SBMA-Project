@@ -1,5 +1,6 @@
 package com.example.sbma_project.views
 
+//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -26,11 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.RunCard
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -50,8 +49,6 @@ fun Home(
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
-    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
-    //distanceViewModel: DistanceViewModel,
 ) {
     var isFirstTime by remember { mutableStateOf(true) } // Track if it's the first time
     Box(
@@ -105,8 +102,6 @@ fun Home(
                             locationViewModel = locationViewModel,
                             runViewModel = runViewModel,
                             pathPoints = pathPoints,
-                            fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
-                            //distanceViewModel = distanceViewModel
                             )
                     }
                 }

@@ -1,5 +1,6 @@
 package com.example.sbma_project.uiComponents
 
+//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.content.Intent
 import android.os.Build
 import android.widget.Toast
@@ -43,12 +44,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sbma_project.APIHelper.FitApiHelper
 import com.example.sbma_project.R
 import com.example.sbma_project.calculators.DistanceCalculator
 import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.services.RunningService
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
@@ -63,7 +62,6 @@ fun RunCard(
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
     pathPoints: List<LatLng>?,
-    fitApiHelper: FitApiHelper, // Pass FitApiHelper as a parameter
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var selectedEmoji by remember { mutableStateOf("") }
@@ -329,7 +327,8 @@ fun RunCard(
                                         time,
                                         pathPoints,
                                         rating,
-                                        enteredText
+                                        enteredText,
+                                        stepLength = null
                                     )
                                 }
                                 resetStateAndHideDialog()

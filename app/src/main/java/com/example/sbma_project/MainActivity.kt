@@ -3,14 +3,9 @@ package com.example.sbma_project
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -39,8 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.sbma_project.APIHelper.FitApiHelper
-import com.example.sbma_project.calculators.StepCounter
 import com.example.sbma_project.extension.hasLocationPermission
 import com.example.sbma_project.internetConnection.ConnectionStatus
 import com.example.sbma_project.internetConnection.currentConnectivityStatus
@@ -60,22 +53,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
-    private val fitApiHelper by lazy { FitApiHelper(this) }
-    private var started = false
-    private var sensorManager: SensorManager? = null
+
     @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val locationViewModel: LocationViewModel by viewModels()
         val runViewModel: RunViewModel by viewModels()
-
-
-        if (!started) {
-            StepCounter.start(this)
-            started = true
-        }
-
 
         setContent {
             val pathPoints by locationViewModel.pathPoints.collectAsState()
@@ -120,7 +104,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
 
                                 )
                             }
@@ -131,7 +114,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
 
                                 )
                             }
@@ -148,7 +130,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-                                    fitApiHelper = fitApiHelper, // Pass FitApiHelper instance
 
                                 )
                             }
@@ -159,7 +140,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
         }
     }
 
-    override fun onPause() {
+/*    override fun onPause() {
         super.onPause()
         if (started) {
             StepCounter.pause()
@@ -177,7 +158,7 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
         }else{
             sensorManager?.registerListener(StepCounter, stepSensor, SensorManager.SENSOR_DELAY_NORMAL)
         }
-    }
+    }*/
   /*  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         // You can handle changes in sensor accuracy here if needed
     }

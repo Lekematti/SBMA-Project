@@ -28,8 +28,7 @@ class LocationViewModel @Inject constructor(
     @SuppressLint("StaticFieldLeak") private val context: Context
 ) : ViewModel(){
 
-    var totalTimeInHours: Float = 0f
-        private set
+    private var totalTimeInHours: Float = 0f
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
@@ -48,7 +47,6 @@ class LocationViewModel @Inject constructor(
 
     private fun calculateDistance() {
         totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints.value)
-
     }
 
     fun resumeDistance() {
@@ -109,7 +107,6 @@ class LocationViewModel @Inject constructor(
         _speed.value = 0f
         StepCounter.stop()
     }
-
 
     fun resetPathPoints(){
         _pathPoints.value = emptyList()
