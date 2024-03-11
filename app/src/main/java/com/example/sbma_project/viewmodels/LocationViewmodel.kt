@@ -28,7 +28,28 @@ class LocationViewModel @Inject constructor(
     @SuppressLint("StaticFieldLeak") private val context: Context
 ) : ViewModel(){
 
-    private var totalTimeInHours: Float = 0f
+
+    //MutableStateFlow to hold the list of speeds
+    private val _speedList: MutableStateFlow<List<Float>> = MutableStateFlow(emptyList())
+    val speedList = _speedList.asStateFlow()
+
+    // MutableStateFlow to hold the list of timestamps corresponding to each speed
+    private val _speedTimestamps: MutableStateFlow<List<Long>> = MutableStateFlow(emptyList())
+    val speedTimestamps = _speedTimestamps.asStateFlow()
+
+    // Update the speed list and timestamps
+    private fun updateSpeedListAndTimestamps(speed: Float, timestamp: Long) {
+        val currentSpeedList = _speedList.value.toMutableList()
+        val currentTimestamps = _speedTimestamps.value.toMutableList()
+
+        currentSpeedList.add(speed)
+        currentTimestamps.add(timestamp)
+
+        _speedList.value = currentSpeedList
+        _speedTimestamps.value = currentTimestamps
+    }
+    var totalTimeInHours: Float = 0f
+        private set
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
@@ -133,9 +154,11 @@ class LocationViewModel @Inject constructor(
                     if (locationWithSpeed != null) {
                         _pathPoints.value = _pathPoints.value + (locationWithSpeed.location ?: LatLng(0.00, 0.00))
                         Log.d("locationSpeed", "${locationWithSpeed.location}")
-                        _speed.value = (locationWithSpeed.speed * 3.6f).toBigDecimal()
+                        val speed = (locationWithSpeed.speed * 3.6f).toBigDecimal()
                             .setScale(2, RoundingMode.HALF_UP).toFloat()
-
+                        _speed.value = speed
+                        val currentTimeMillis = System.currentTimeMillis()
+                        updateSpeedListAndTimestamps(speed, currentTimeMillis)
                     }
                     updateDistance()
                 }

@@ -1,6 +1,5 @@
 package com.example.sbma_project
 
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -27,7 +26,6 @@ fun BottomNavGraph(
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
-
     ) {
     NavHost(
         navController = navController,
@@ -46,8 +44,9 @@ fun BottomNavGraph(
         }
         composable(route = BottomBarScreen.History.route) {
             History(
+                settingsActionListener = settingsActionListener,
                 runViewModel = runViewModel,
-
+                locationPermissionState = locationPermissionState,
                 )
         }
         composable(route = BottomBarScreen.Info.route) {
