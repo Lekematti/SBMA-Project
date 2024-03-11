@@ -1,7 +1,6 @@
 package com.example.sbma_project.views
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,7 +68,7 @@ fun History(
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
     var showDetailView by remember { mutableStateOf(false) }
     var selectedHistoryId by remember { mutableLongStateOf(-1L) }
-    val selectedHistoryData by remember { mutableStateOf("") }
+
     val showDialog = remember { mutableStateOf(false) }
     val showSortDialog = remember { mutableStateOf(false) }
     val runIdToDelete = remember { mutableLongStateOf(-1L) }
@@ -78,6 +76,7 @@ fun History(
     // Remember the last selected sorting option
     var selectedSortOption by remember { mutableStateOf(sortingOptions.first()) }
     val showInfo = remember { mutableStateOf(false) }
+
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
@@ -91,16 +90,45 @@ fun History(
             .padding(16.dp)
     ) {
         if (!showDetailView) {
-            //Graphs
-            Card(
+            Column(
                 modifier = Modifier
-                    .height(300.dp)
-                    .width(400.dp)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    RunHistoryGraph(runViewModel = runViewModel)
+                //Graphs
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .height(300.dp)
+                        .width(400.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        RunHistoryGraph(runViewModel = runViewModel)
+                    }
                 }
+                Text(
+                    text = "Click here for more info",
+                    fontSize = 10.sp,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(10.dp)
+                        .clickable {
+                            showInfo.value = true
+                        }
+                )
+            }
+            if (showInfo.value) {
+                AlertDialog(
+                    onDismissRequest = { showInfo.value = false },
+                    title = { Text("Graph Info") },
+                    text = { Text("This graph shows the progression of your runs. The lower your time and the higher your distance the better.") },
+                    confirmButton = {
+                        Button(onClick = { showInfo.value = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
             }
             Row(
                 modifier = Modifier
@@ -126,84 +154,53 @@ fun History(
                         )
                     }
                 }
-                Text(
-                    text = "Click here for more info",
-                    fontSize = 10.sp,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .clickable {
-                            showInfo.value = true
-                        }
-                )
-                if (showInfo.value) {
-                    AlertDialog(
-                        onDismissRequest = { showInfo.value = false },
-                        title = { Text("Graph Info") },
-                        text = { Text("This graph shows the progression of your runs. The lower your time and the higher your distance the better.") },
-                        confirmButton = {
-                            Button(onClick = { showInfo.value = false }) {
-                                Text("Close")
+            }
+            // run stats items
+            LazyColumn {
+                items(runsState.value) { runs ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .clickable {
+                                selectedHistoryId = runs.id // Store the ID only
+                                showDetailView = true
                             }
-                        }
-                    )
-                }
-                // run stats items
-                LazyColumn {
-                    items(runsState.value) { runs ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .clickable {
-                                    selectedHistoryId = runs.id // Store the ID only
-                                    showDetailView = true
-                                }
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text(
-                                        text = formatDate(runs.createdAt),
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Card(
-                                        modifier = Modifier
-                                            .clickable {
-                                                showDeleteConfirmationDialog(
-                                                    runs.id,
-                                                    runIdToDelete,
-                                                    showDialog
-                                                )
-                                            }
-                                            .align(Alignment.CenterVertically)
-                                            .size(32.dp),
-                                        shape = RoundedCornerShape(8.dp),
-                                        elevation = CardDefaults.cardElevation(8.dp),
-                                    ) {
-                                        IconButton(onClick = {
+                                Text(
+                                    text = formatDate(runs.createdAt),
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Card(
+                                    modifier = Modifier
+                                        .clickable {
                                             showDeleteConfirmationDialog(
                                                 runs.id,
                                                 runIdToDelete,
                                                 showDialog
                                             )
                                         }
-                                        ) {
-                                            DeleteIcon(Modifier.size(32.dp))
-                                        }
-                                    }
-
+                                        .align(Alignment.CenterVertically)
+                                        .size(32.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    elevation = CardDefaults.cardElevation(8.dp),
+                                ) {
+                                    DeleteIcon(Modifier.size(32.dp))
                                 }
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(text = "Duration: ${runs.durationInMillis}s")
-                                Text(text = "route LatLng size: ${runs.routePath?.size}")
                             }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(text = "Duration: ${runs.durationInMillis}s")
+                            Text(text = "route LatLng size: ${runs.routePath?.size}")
                         }
                     }
                 }
@@ -219,175 +216,140 @@ fun History(
                 ) {
                     showDetailView = false // Close the detailed view
                 }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(vertical = 8.dp),
-                        contentAlignment = Alignment.Center
+            }
+        }
+
+        // delete dialog
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = { Text("Confirm Deletion") },
+                text = { Text("Are you sure you want to delete this run?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            runViewModel.deleteRunById(runIdToDelete.longValue)
+                            showDialog.value = false
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                        contentPadding = PaddingValues(16.dp)
                     ) {
-                        Text("Graph placeholder for $selectedHistoryData")
+                        Text("Confirm")
                     }
-
-                    Text(
-                        text = "Detailed View for $selectedHistoryData",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    Text(
-                        text = "More detailed information here...",
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    Text(
-                        text = "Back",
-                        modifier = Modifier
-                            .clickable { showDetailView = false }
-                            .padding(top = 16.dp)
-                            .background(color = Color.LightGray)
-                    )
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showDialog.value = false },
+                        colors = ButtonDefaults.outlinedButtonColors(),
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        Text("Cancel")
+                    }
                 }
-            }
+            )
+        }
 
-            // delete dialog
-            if (showDialog.value) {
-                AlertDialog(
-                    onDismissRequest = { showDialog.value = false },
-                    title = { Text("Confirm Deletion") },
-                    text = { Text("Are you sure you want to delete this run?") },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                runViewModel.deleteRunById(runIdToDelete.longValue)
-                                showDialog.value = false
-                            },
-                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                            contentPadding = PaddingValues(16.dp)
-                        ) {
-                            Text("Confirm")
-                        }
-                    },
-                    dismissButton = {
-                        Button(
-                            onClick = { showDialog.value = false },
-                            colors = ButtonDefaults.outlinedButtonColors(),
-                            contentPadding = PaddingValues(16.dp)
-                        ) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
-
-            if (showSortDialog.value) {
-                // Sorting dialog
-                AlertDialog(
-                    onDismissRequest = { showSortDialog.value = false },
-                    title = { Text("Sort By") },
-                    confirmButton = {
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .fillMaxWidth(),
-                        ) {
-                            sortingOptions.forEachIndexed { index, option ->
-                                Button(
-                                    onClick = {
-                                        selectedSortOption = option
-                                        // sorting based on the selected option
-                                        when (option) {
-                                            "Created Date Ascending" -> {
-                                                runsState.value =
-                                                    runsState.value.sortedBy { it.createdAt }
-                                            }
-
-                                            "Created Date Descending" -> {
-                                                runsState.value =
-                                                    runsState.value.sortedByDescending { it.createdAt }
-                                            }
-
-                                            "Modified Date Ascending" -> {
-                                                runsState.value =
-                                                    runsState.value.sortedBy { it.modifiedAt }
-                                            }
-
-                                            "Modified Date Descending" -> {
-                                                runsState.value =
-                                                    runsState.value.sortedByDescending { it.modifiedAt }
-                                            }
+        if (showSortDialog.value) {
+            // Sorting dialog
+            AlertDialog(
+                onDismissRequest = { showSortDialog.value = false },
+                title = { Text("Sort By") },
+                confirmButton = {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .fillMaxWidth(),
+                    ) {
+                        sortingOptions.forEachIndexed { index, option ->
+                            Button(
+                                onClick = {
+                                    selectedSortOption = option
+                                    // sorting based on the selected option
+                                    when (option) {
+                                        "Created Date Ascending" -> {
+                                            runsState.value =
+                                                runsState.value.sortedBy { it.createdAt }
                                         }
-                                        showSortDialog.value =
-                                            false // Close the dialog after sorting
-                                    },
-                                    colors = ButtonDefaults.outlinedButtonColors(),
+
+                                        "Created Date Descending" -> {
+                                            runsState.value =
+                                                runsState.value.sortedByDescending { it.createdAt }
+                                        }
+
+                                        "Modified Date Ascending" -> {
+                                            runsState.value =
+                                                runsState.value.sortedBy { it.modifiedAt }
+                                        }
+
+                                        "Modified Date Descending" -> {
+                                            runsState.value =
+                                                runsState.value.sortedByDescending { it.modifiedAt }
+                                        }
+                                    }
+                                    showSortDialog.value = false // Close the dialog after sorting
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(),
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .fillMaxWidth(),
+                                contentPadding = PaddingValues(16.dp)
+                            ) {
+                                Text(option)
+                            }
+                            //divider after each option except the last one
+                            if (index < sortingOptions.size - 1) {
+                                Divider(
                                     modifier = Modifier
-                                        .padding(8.dp)
-                                        .fillMaxWidth(),
-                                    contentPadding = PaddingValues(16.dp)
-                                ) {
-                                    Text(option)
-                                }
-                                //divider after each option except the last one
-                                if (index < sortingOptions.size - 1) {
-                                    Divider(
-                                        modifier = Modifier
-                                            .height(2.dp)
-                                            .fillMaxWidth(0.9f)
-                                            .align(Alignment.CenterHorizontally)
-                                    )
-                                }
+                                        .height(2.dp)
+                                        .fillMaxWidth(0.9f)
+                                        .align(Alignment.CenterHorizontally)
+                                )
                             }
                         }
                     }
-                )
-            }
+                }
+            )
         }
     }
 }
 
 
-    fun showDeleteConfirmationDialog(
-        runId: Long,
-        runIdToDelete: MutableState<Long>,
-        showDialog: MutableState<Boolean>
-    ) {
-        runIdToDelete.value = runId
-        showDialog.value = true
+fun showDeleteConfirmationDialog(
+    runId: Long,
+    runIdToDelete: MutableState<Long>,
+    showDialog: MutableState<Boolean>
+) {
+    runIdToDelete.value = runId
+    showDialog.value = true
+}
+
+
+fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("MMMM d, yyyy 'at' HH:mm:ss", Locale.US)
+    return formatter.format(date)
+}
+
+
+@Composable
+fun DeleteIcon(modifier: Modifier) {
+    Icon(
+        imageVector = Icons.Filled.Delete,
+        contentDescription = "Delete",
+        tint = Color.Red,
+        modifier = modifier
+    )
+}
+
+fun ratingToEmoji(rating: Int): String {
+    return when (rating) {
+        1 -> "😞"
+        2 -> "😐"
+        3 -> "😊"
+        4 -> "😃"
+        5 -> "😄"
+        else -> throw IllegalArgumentException("Invalid rating value")
     }
-
-
-    fun formatDate(date: Date): String {
-        val formatter = SimpleDateFormat("MMMM d, yyyy 'at' HH:mm:ss", Locale.US)
-        return formatter.format(date)
-    }
-
-
-    @Composable
-    fun DeleteIcon(modifier: Modifier) {
-        Icon(
-            imageVector = Icons.Filled.Delete,
-            contentDescription = "Delete",
-            tint = Color.Red,
-            modifier = modifier
-        )
-    }
-
-    fun ratingToEmoji(rating: Int): String {
-        return when (rating) {
-            1 -> "😞"
-            2 -> "😐"
-            3 -> "😊"
-            4 -> "😃"
-            5 -> "😄"
-            else -> throw IllegalArgumentException("Invalid rating value")
-        }
-    }
-
+}
 
 
 
