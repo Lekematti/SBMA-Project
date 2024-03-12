@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,12 +46,14 @@ fun CardDistance(modifier: Modifier, pathPoints: List<LatLng>?) {
         ) {
             Text(
                 text = "Distance",
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = distanceText
-            )
+                text = distanceText,
+                style = MaterialTheme.typography.bodySmall,
+                )
         }
     }
 }

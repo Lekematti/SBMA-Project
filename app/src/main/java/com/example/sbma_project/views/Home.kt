@@ -112,7 +112,10 @@ fun Home(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("We need permissions to use this app")
+                    Text(
+                        "We need permissions to use this app",
+                        style = MaterialTheme.typography.titleSmall
+                    )
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
@@ -120,7 +123,10 @@ fun Home(
                             settingsActionListener.openAppSettings()
                         }
                     ) {
-                        Text("Open Settings")
+                        Text(
+                            "Open Settings",
+                            style = MaterialTheme.typography.titleSmall
+                        )
                     }
                 }
             }
