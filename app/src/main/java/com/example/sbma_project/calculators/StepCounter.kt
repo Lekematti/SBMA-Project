@@ -12,32 +12,59 @@ object StepCounter : SensorEventListener {
     private var stepCountSensor: Sensor? = null
     private var previousTotalSteps = 0
     private var totalSteps = 0
-    private var started = false
     private var savedSteps = 0
+    private var isInitialized = false
 
     fun start(context: Context) {
-        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        stepCountSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        sensorManager?.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_NORMAL)
-        started = true
-        Log.d("StepCounter", "Start: $totalSteps")
+        if (!isInitialized) {
+            sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            stepCountSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+
+            if (stepCountSensor != null) {
+                sensorManager?.registerListener(
+                    this,
+                    stepCountSensor,
+                    SensorManager.SENSOR_DELAY_NORMAL
+                )
+                previousTotalSteps = 0
+                isInitialized = true
+                Log.d("StepCounter", "Start: $totalSteps")
+            } else {
+                Log.d("StepCounter", "Step counter sensor not available")
+            }
+        }
     }
+
+    fun resetSavedSteps() {
+        savedSteps = 0
+        previousTotalSteps = 0
+        totalSteps = 0
+    }
+
     fun getStepCount(): Int {
         return totalSteps - previousTotalSteps
     }
+
     fun saveSteps(): Int {
-        val stepsSinceLastSave = totalSteps - previousTotalSteps
+        val stepsSinceLastSave = getStepCount()
         savedSteps += stepsSinceLastSave
         previousTotalSteps = totalSteps
         return savedSteps
     }
+
     fun pause() {
         sensorManager?.unregisterListener(this)
     }
+
     fun resume() {
-        sensorManager?.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager?.registerListener(
+            this,
+            stepCountSensor,
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
 
     }
+
     fun stop() {
         sensorManager?.unregisterListener(this)
         previousTotalSteps = totalSteps
@@ -49,9 +76,9 @@ object StepCounter : SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-            if (started) {
+            if (isInitialized) {
                 previousTotalSteps = event.values[0].toInt()
-                started = false
+                isInitialized = false
             }
             totalSteps = event.values[0].toInt()
             Log.d("StepCounter", "Current: $totalSteps")

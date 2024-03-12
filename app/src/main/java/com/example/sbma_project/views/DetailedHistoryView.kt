@@ -188,7 +188,7 @@ fun DetailedHistoryView(
                                         showDeleteConfirmationDialog
                                     )
                                 }
-                                .size(48.dp),
+                                .size(40.dp),
                             shape = RoundedCornerShape(8.dp),
                             elevation = CardDefaults.cardElevation(8.dp),
                         ) {
@@ -213,11 +213,11 @@ fun DetailedHistoryView(
                             .weight(1f)
                     )
                 }
+
                 //This holds map, duration, distance, steps, avg speed, step length, avg pace, rating, note
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
-                    // Use this modifier for vertical scrolling
                 ) {
                     Column(
                         modifier = Modifier
@@ -232,7 +232,6 @@ fun DetailedHistoryView(
                         ) {
                             Text(text = "* Tap to edit", fontStyle = FontStyle.Italic)
                         }
-
                         Card(
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)

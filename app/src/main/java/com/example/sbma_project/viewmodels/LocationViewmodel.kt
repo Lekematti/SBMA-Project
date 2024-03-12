@@ -100,6 +100,7 @@ class LocationViewModel @Inject constructor(
         _stopButtonEnabled.value = true
         startLocationUpdates()
         StepCounter.start(context)
+        StepCounter.resetSavedSteps() // Reset saved steps for a new run
     }
 
 
@@ -126,6 +127,12 @@ class LocationViewModel @Inject constructor(
         locationJob?.cancel()
         totalTimeInHours = time.value / 3600f
         _speed.value = 0f
+
+        val steps = StepCounter.getStepCount()
+        val stepsBeforeFinish = StepCounter.saveSteps()
+        Log.d("Stats", "Steps before finish: $stepsBeforeFinish, Steps: $steps")
+
+        StepCounter.getStepCount()
         StepCounter.stop()
     }
 
