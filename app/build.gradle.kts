@@ -57,7 +57,7 @@ android {
 dependencies {
 
     implementation("androidx.test:runner:1.5.2")
-    val lifecycleVersion = "2.7.0"
+    //val lifecycleVersion = "2.7.0"
 
     // Navigation Component
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
@@ -108,13 +108,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // Lifecycle
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
-    implementation ("androidx.lifecycle:lifecycle-service:$lifecycleVersion")
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-service:2.7.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.3")
 
 
     // Google maps

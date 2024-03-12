@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,13 +69,14 @@ import java.util.Date
 @Composable
 fun DetailedHistoryView(
     settingsActionListener: SettingsActionListener,
-    locationPermissionState : String,
+    locationPermissionState: String,
     runViewModel: RunViewModel,
     runId: Long,
     onBack: () -> Unit
 ) {
     var isFirstTime by remember { mutableStateOf(true) }
-    val cameraState = remember { CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 20f, 0f,0f)) }
+    val cameraState =
+        remember { CameraPositionState(CameraPosition(LatLng(0.0, 0.0), 20f, 0f, 0f)) }
 
     val runDetails = runViewModel.getRunById(runId).observeAsState()
 
@@ -139,28 +144,8 @@ fun DetailedHistoryView(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(5.dp)
     ) {
-        // Back button
-        Button(
-            onClick = { onBack() },
-            modifier = Modifier.padding(top = 16.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(id = R.drawable.arrow_back_ios_24px),
-                    contentDescription = "Back Arrow",
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Back")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         runDetails.value?.let { run ->
             val initialPosition = run.routePath?.firstOrNull()?.let {
                 LatLng(it.latitude, it.longitude)
@@ -170,8 +155,52 @@ fun DetailedHistoryView(
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(16.dp)
                         .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Back button
+                    Box(modifier = Modifier.wrapContentSize()) {
+                        Button(
+                            onClick = { onBack() },
+                            modifier = Modifier.padding(top = 6.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.arrow_back_ios_24px),
+                                    contentDescription = "Back Arrow",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = "Back")
+                            }
+                        }
+                    }
+                    Box(modifier = Modifier.wrapContentSize()) {
+                        Card(
+                            modifier = Modifier
+                                .clickable {
+                                    showDeleteConfirmationDialog(
+                                        run.id,
+                                        runIdToDelete,
+                                        showDeleteConfirmationDialog
+                                    )
+                                }
+                                .size(48.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                        ) {
+                            DeleteIcon(Modifier.size(48.dp))
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -183,25 +212,17 @@ fun DetailedHistoryView(
                             .padding(bottom = 16.dp)
                             .weight(1f)
                     )
-                    Card(
-                        modifier = Modifier
-                            .clickable {
-                                showDeleteConfirmationDialog(
-                                    run.id,
-                                    runIdToDelete,
-                                    showDeleteConfirmationDialog
-                                )
-                            }
-                            .size(48.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                    ) {
-                        DeleteIcon(Modifier.size(48.dp))
-                    }
                 }
-                Card {
+                //This holds map, duration, distance, steps, avg speed, step length, avg pace, rating, note
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                    // Use this modifier for vertical scrolling
+                ) {
                     Column(
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(IntrinsicSize.Min)
                     ) {
                         Row(
                             modifier = Modifier
@@ -215,11 +236,11 @@ fun DetailedHistoryView(
                         Card(
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
-                                .fillMaxHeight(0.3f)
+                                .fillMaxHeight(0.5f)
                                 .fillMaxWidth()
                         ) {
 
-                            if (locationPermissionState == "loading"){
+                            if (locationPermissionState == "loading") {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
                                     contentAlignment = Alignment.Center
@@ -230,8 +251,11 @@ fun DetailedHistoryView(
                                 if (!run.routePath.isNullOrEmpty()) {
                                     initialPosition?.let {
                                         if (isFirstTime) { // If it's the first time, set camera position
-                                            LaunchedEffect(key1 = run.routePath.first()){
-                                                cameraState.centerOnLocation(run.routePath.first(), zoom = 20f)
+                                            LaunchedEffect(key1 = run.routePath.first()) {
+                                                cameraState.centerOnLocation(
+                                                    run.routePath.first(),
+                                                    zoom = 20f
+                                                )
                                                 isFirstTime = false
                                             }
                                         }
@@ -312,244 +336,261 @@ fun DetailedHistoryView(
                                     }
                                 }
                             }
-
-
-
                         }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-
-                        ) {
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.timer_24px),
-                                title = "Duration",
-                                description = formatTime(run.durationInMillis)
-                            )
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.route_24px),
-                                title = "Distance",
-                                description = "${run.routePath?.size}"
-                            )
-                        }
-                        Row {
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.footprint_24px),
-                                title = "Steps",
-                                description = "${run.durationInMillis}"
-                            )
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.speed_24px),
-                                title = "Average Speed",
-                                description = "${run.avgSpeed}km/hr"
-                            )
-                        }
-                        Row {
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.ecg_heart_24px),
-                                title = "Heart Beats",
-                                description = "${run.durationInMillis}"
-                            )
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.steps_24px),
-                                title = "Average Pace",
-                                description = "${run.speedTimestamps?.size}"
-                            )
-                        }
-                        Row {
-                            run.rating?.let { rating ->
-                                DetailCardItem(
-                                    modifier = Modifier
-                                        .clickable { showRatingDialog() }
-                                        .padding(16.dp)
-                                        .weight(0.5f),
-                                    icon = painterResource(id = R.drawable.relax_24px),
-                                    title = "Post Run Feeling *",
-                                    description = ratingToEmoji(rating)
-                                )
-                            } ?: DetailCardItem(
-                                modifier = Modifier
-                                    .clickable { showRatingDialog() }
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.relax_24px),
-                                title = "Post Run Feeling *",
-                                description = ""
-                            )
-                            DetailCardItem(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .weight(0.5f),
-                                icon = painterResource(id = R.drawable.steps_24px),
-                                title = "Average Pace",
-                                description = "${run.speedList?.size}"
-                            )
-                        }
-                        //update rating dialog
-                        if (showDialog.value) {
-                            Dialog(onDismissRequest = { showDialog.value = false }) {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .height(200.dp)
-                                            .padding(16.dp),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "Update Post Run Feeling",
-                                            style = MaterialTheme.typography.headlineMedium,
-                                            modifier = Modifier.padding(bottom = 8.dp)
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Row(
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            listOf("😞", "😐", "😊", "😃", "😄").forEach { emoji ->
-                                                EmojiButton(
-                                                    emoji = emoji,
-                                                    isSelected = selectedEmoji == emoji,
-                                                    onClick = { onRatingSelected(emojiToRating(emoji).value) }
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        // Note editing dialog
-                        if (showNoteDialog.value) {
-                            Dialog(onDismissRequest = { showNoteDialog.value = false }) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp)
-                                    ) {
-                                        Text(
-                                            text = "Edit Note",
-                                            style = MaterialTheme.typography.headlineMedium,
-                                            modifier = Modifier.padding(bottom = 8.dp)
-                                        )
-                                        // Text field to edit note
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(100.dp)
-                                        ) {
-                                            BasicTextField(
-                                                value = noteText,
-                                                onValueChange = { noteText = it },
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(8.dp),
-                                                textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
-                                                maxLines = 5
-                                            )
-                                        }
-                                        // Buttons
-                                        Row(
-                                            horizontalArrangement = Arrangement.End,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Button(
-                                                onClick = { onCancelNoteEdit() },
-                                                modifier = Modifier.padding(end = 8.dp),
-                                                colors = if (noteText != run.notes) ButtonDefaults.outlinedButtonColors() else ButtonDefaults.buttonColors(
-                                                    MaterialTheme.colorScheme.primary
-                                                ),
-                                            ) {
-                                                Text(text = "Cancel")
-                                            }
-                                            Button(
-                                                onClick = { onSaveNote() },
-                                                enabled = noteText != run.notes,
-                                            ) {
-                                                Text(text = "Update Note")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        //delete confirmation dialog
-                        if (showDeleteConfirmationDialog.value) {
-                            AlertDialog(
-                                onDismissRequest = { showDeleteConfirmationDialog.value = false },
-                                title = { Text("Confirm Deletion") },
-                                text = { Text("Are you sure you want to delete this run?") },
-                                confirmButton = {
-                                    Button(
-                                        onClick = {
-                                            runViewModel.deleteRunById(runIdToDelete.longValue)
-                                            showDeleteConfirmationDialog.value = false
-                                            onBack()
-                                        },
-                                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                                        contentPadding = PaddingValues(16.dp)
-                                    ) {
-                                        Text("Confirm")
-                                    }
-                                },
-                                dismissButton = {
-                                    Button(
-                                        onClick = { showDeleteConfirmationDialog.value = false },
-                                        colors = ButtonDefaults.outlinedButtonColors(),
-                                        contentPadding = PaddingValues(16.dp)
-                                    ) {
-                                        Text("Cancel")
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    run.notes?.let {
-                        DetailCardItem(
-                            modifier = Modifier
-                                .clickable { showNoteEditDialog() }
-                                .padding(16.dp),
-                            icon = painterResource(id = R.drawable.description_24px),
-                            title = "Notes *",
-                            description = it
-                        )
-                    }
-                    run.modifiedAt?.let {
-                        Row(
+                        //card to make this section scrollable
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.End,
+                                .verticalScroll(rememberScrollState())
                         ) {
-                            Text(text = "last modified: ${formatDate(it)}")
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.timer_24px),
+                                    title = "Duration",
+                                    description = formatTime(run.durationInMillis)
+                                )
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.route_24px),
+                                    title = "Distance",
+                                    description = "${run.distance}m"
+                                )
+                            }
+                            Row {
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.footprint_24px),
+                                    title = "Steps",
+                                    description = "${run.steps}"
+                                )
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.speed_24px),
+                                    title = "Average Speed",
+                                    description = "${run.avgSpeed}km/hr"
+                                )
+                            }
+                            Row {
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.footprint_24px),
+                                    title = "Step Length",
+                                    description = "${run.stepLength}"
+                                )
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.steps_24px),
+                                    title = "Average Pace",
+                                    description = "${run.speedTimestamps?.size}"
+                                )
+                            }
+                            Row {
+                                run.rating?.let { rating ->
+                                    DetailCardItem(
+                                        modifier = Modifier
+                                            .clickable { showRatingDialog() }
+                                            .padding(10.dp)
+                                            .weight(0.5f),
+                                        icon = painterResource(id = R.drawable.relax_24px),
+                                        title = "Post Run Rating *",
+                                        description = ratingToEmoji(rating)
+                                    )
+                                } ?: DetailCardItem(
+                                    modifier = Modifier
+                                        .clickable { showRatingDialog() }
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.relax_24px),
+                                    title = "Post Run Rating *",
+                                    description = ""
+                                )
+                                DetailCardItem(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .weight(0.5f),
+                                    icon = painterResource(id = R.drawable.steps_24px),
+                                    title = "Average Pace",
+                                    description = "${run.speedList?.size}"
+                                )
+                            }
+                            Row {
+                                run.notes?.let {
+                                    DetailCardItem(
+                                        modifier = Modifier
+                                            .clickable { showNoteEditDialog() }
+                                            .padding(10.dp)
+                                            .weight(1f),
+                                        icon = painterResource(id = R.drawable.description_24px),
+                                        title = "Notes *",
+                                        description = it
+                                    )
+                                }
+                            }
+
+                            //update rating dialog
+                            if (showDialog.value) {
+                                Dialog(onDismissRequest = { showDialog.value = false }) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .height(200.dp)
+                                                .padding(16.dp),
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "Update Post Run Rating",
+                                                style = MaterialTheme.typography.headlineMedium,
+                                                modifier = Modifier.padding(bottom = 8.dp)
+                                            )
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                            Row(
+                                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                listOf("😞", "😐", "😊", "😃", "😄").forEach { emoji ->
+                                                    EmojiButton(
+                                                        emoji = emoji,
+                                                        isSelected = selectedEmoji == emoji,
+                                                        onClick = {
+                                                            onRatingSelected(
+                                                                emojiToRating(
+                                                                    emoji
+                                                                ).value
+                                                            )
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // Note editing dialog
+                            if (showNoteDialog.value) {
+                                Dialog(onDismissRequest = { showNoteDialog.value = false }) {
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(16.dp)
+                                        ) {
+                                            Text(
+                                                text = "Edit Note",
+                                                style = MaterialTheme.typography.headlineMedium,
+                                                modifier = Modifier.padding(bottom = 8.dp)
+                                            )
+                                            // Text field to edit note
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(100.dp)
+                                                    .verticalScroll(rememberScrollState())
+                                            ) {
+                                                BasicTextField(
+                                                    value = noteText,
+                                                    onValueChange = { noteText = it },
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .padding(8.dp),
+                                                    textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                                                    maxLines = Int.MAX_VALUE
+                                                )
+                                            }
+                                            // Buttons
+                                            Row(
+                                                horizontalArrangement = Arrangement.End,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Button(
+                                                    onClick = { onCancelNoteEdit() },
+                                                    modifier = Modifier.padding(end = 8.dp),
+                                                    colors = if (noteText != run.notes) ButtonDefaults.outlinedButtonColors() else ButtonDefaults.buttonColors(
+                                                        MaterialTheme.colorScheme.primary
+                                                    ),
+                                                ) {
+                                                    Text(text = "Cancel")
+                                                }
+                                                Button(
+                                                    onClick = { onSaveNote() },
+                                                    enabled = noteText != run.notes,
+                                                ) {
+                                                    Text(text = "Update Note")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            //delete confirmation dialog
+                            if (showDeleteConfirmationDialog.value) {
+                                AlertDialog(
+                                    onDismissRequest = {
+                                        showDeleteConfirmationDialog.value = false
+                                    },
+                                    title = { Text("Confirm Deletion") },
+                                    text = { Text("Are you sure you want to delete this run?") },
+                                    confirmButton = {
+                                        Button(
+                                            onClick = {
+                                                runViewModel.deleteRunById(runIdToDelete.longValue)
+                                                showDeleteConfirmationDialog.value = false
+                                                onBack()
+                                            },
+                                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                                            contentPadding = PaddingValues(16.dp)
+                                        ) {
+                                            Text("Confirm")
+                                        }
+                                    },
+                                    dismissButton = {
+                                        Button(
+                                            onClick = {
+                                                showDeleteConfirmationDialog.value = false
+                                            },
+                                            colors = ButtonDefaults.outlinedButtonColors(),
+                                            contentPadding = PaddingValues(16.dp)
+                                        ) {
+                                            Text("Cancel")
+                                        }
+                                    }
+                                )
+                            }
+                        run.modifiedAt?.let {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.End,
+                            ) {
+                                Text(text = "last modified: ${formatDate(it)}")
+                            }
+                        }
                         }
                     }
-
                 }
             }
         } ?: Box(
@@ -572,16 +613,17 @@ fun DetailCardItem(modifier: Modifier, icon: Painter, title: String, description
             painter = icon,
             contentDescription = title,
             modifier = Modifier
-                .padding(end = 8.dp)
-                .size(32.dp)
+                .padding(end = 4.dp)
+                .size(22.dp)
         )
         Column(
             modifier = Modifier
                 .weight(1f)
+
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium,
             )
             Text(
                 text = description,
