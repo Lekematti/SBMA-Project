@@ -1,5 +1,6 @@
 package com.example.sbma_project.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -64,6 +65,7 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
             val currentTimestamp = Date() // Get current date and time
             val totalDistance = DistanceCalculator.calculateTotalDistance(routePath)
             val steps = StepCounter.saveSteps()
+            Log.d("Stats","Steps: $steps, Step Length: $stepLength, Distance: $totalDistance, Speed: $avgSpeed")
             val newRun = Run(
                 durationInMillis = startTime,
                 routePath = routePath,

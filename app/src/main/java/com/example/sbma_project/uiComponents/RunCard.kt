@@ -3,7 +3,6 @@ package com.example.sbma_project.uiComponents
 //import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,6 +51,7 @@ import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -324,9 +324,8 @@ fun RunCard(
                                     }
                                     val totalTimeInSeconds = locationViewModel.time.value
                                     avgSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
-                                    val roundedAvgSpeed = String.format("%.2f", avgSpeed)
+                                    val roundedAvgSpeed = String.format(Locale.US,"%.2f", avgSpeed)
                                     runViewModel.createRun(
-
                                         startTime = time,
                                         routePath = pathPoints,
                                         speedList = speedList,
