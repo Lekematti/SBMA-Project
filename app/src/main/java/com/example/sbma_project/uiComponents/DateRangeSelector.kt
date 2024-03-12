@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
@@ -20,20 +22,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.sbma_project.views.formatDate
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateRangeSelector(
     onDismiss: () -> Unit,
-    onDateRangeSelected: (startDate: Date, endDate: Date) -> Unit
+    onDateRangeSelected: (startDate: Date, endDate: Date) -> Unit,
+    modifier: Modifier
 ) {
     val state = rememberDateRangePickerState()
-
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier
@@ -58,7 +63,37 @@ fun DateRangeSelector(
                 Text(text = "Save")
             }
         }
-        DateRangePicker(state = state, modifier = Modifier.weight(1f))
+        DateRangePicker(
+            state = state,
+            modifier = Modifier.fillMaxSize(),
+            headline = { CustomDateRangePickerHeadline(state = state) } // Custom headline composable
+        )
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomDateRangePickerHeadline(state: DateRangePickerState) {
+    Text(
+        text = buildString {
+            if (state.selectedStartDateMillis != null && state.selectedEndDateMillis != null) {
+                append(formatRange(state.selectedStartDateMillis))
+                append(" - ")
+                append(formatRange(state.selectedEndDateMillis))
+            } else {
+                append("Date Range")
+            }
+        },
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(16.dp)
+    )
+}
+
+
+@Composable
+fun formatRange(date: Long?): String {
+    date ?: return "Select Date Range"
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return formatter.format(Date(date))
+}

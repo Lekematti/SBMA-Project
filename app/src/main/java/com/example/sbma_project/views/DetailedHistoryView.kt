@@ -174,11 +174,11 @@ fun DetailedHistoryView(
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Back")
+                                Text(text = "Back", style = MaterialTheme.typography.titleSmall)
                             }
                         }
                     }
-                    Box(modifier = Modifier.wrapContentSize()) {
+                    Box(modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically)) {
                         Card(
                             modifier = Modifier
                                 .clickable {
@@ -190,11 +190,19 @@ fun DetailedHistoryView(
                                 }
                                 .size(48.dp),
                             shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(8.dp),
+                            elevation = CardDefaults.cardElevation(8.dp)
                         ) {
-                            DeleteIcon(Modifier.size(48.dp))
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                DeleteIcon(Modifier.size(32.dp))
+                            }
                         }
                     }
+
+
+
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -206,7 +214,7 @@ fun DetailedHistoryView(
                 ) {
                     Text(
                         text = formatDate(run.createdAt),
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleSmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .padding(bottom = 16.dp)
@@ -230,7 +238,7 @@ fun DetailedHistoryView(
                                 .padding(8.dp),
                             horizontalArrangement = Arrangement.End,
                         ) {
-                            Text(text = "* Tap to edit", fontStyle = FontStyle.Italic)
+                            Text(text = "* Tap to edit", fontStyle = FontStyle.Italic, style = MaterialTheme.typography.bodySmall)
                         }
 
                         Card(
@@ -285,7 +293,6 @@ fun DetailedHistoryView(
                                                     )
                                                 )
                                             }
-
                                             // marker for finish point
                                             if (run.routePath.isNotEmpty()) {
                                                 Marker(
@@ -311,6 +318,8 @@ fun DetailedHistoryView(
                                     ) {
                                         Text(
                                             text = "No routes were detected.",
+                                            textAlign = TextAlign.Center,
+                                            style = MaterialTheme.typography.titleSmall,
                                             modifier = Modifier.align(Alignment.Center),
                                         )
                                     }
@@ -324,7 +333,11 @@ fun DetailedHistoryView(
                                     verticalArrangement = Arrangement.Center,
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text("We need permissions to view the routes on the map")
+                                    Text(
+                                        "We need permissions to view the routes on the map",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        textAlign = TextAlign.Center
+                                    )
                                     Spacer(modifier = Modifier.height(24.dp))
 
                                     Button(
@@ -332,7 +345,7 @@ fun DetailedHistoryView(
                                             settingsActionListener.openAppSettings()
                                         }
                                     ) {
-                                        Text("Open Settings")
+                                        Text("Open Settings", style = MaterialTheme.typography.titleSmall)
                                     }
                                 }
                             }
@@ -340,7 +353,7 @@ fun DetailedHistoryView(
                         //card to make this section scrollable
                         Card(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
                             Row(
@@ -410,7 +423,7 @@ fun DetailedHistoryView(
                                             .padding(10.dp)
                                             .weight(0.5f),
                                         icon = painterResource(id = R.drawable.relax_24px),
-                                        title = "Post Run Rating *",
+                                        title = "Feeling *",
                                         description = ratingToEmoji(rating)
                                     )
                                 } ?: DetailCardItem(
@@ -419,7 +432,7 @@ fun DetailedHistoryView(
                                         .padding(10.dp)
                                         .weight(0.5f),
                                     icon = painterResource(id = R.drawable.relax_24px),
-                                    title = "Post Run Rating *",
+                                    title = "Feeling *",
                                     description = ""
                                 )
                                 DetailCardItem(
@@ -623,11 +636,11 @@ fun DetailCardItem(modifier: Modifier, icon: Painter, title: String, description
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleSmall,
             )
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }

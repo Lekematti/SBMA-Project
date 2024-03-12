@@ -149,7 +149,7 @@ fun History(
                 }
                 Text(
                     text = "Click here for more info",
-                    fontSize = 10.sp,
+                    style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(10.dp)
@@ -161,11 +161,15 @@ fun History(
             if (showInfo.value) {
                 AlertDialog(
                     onDismissRequest = { showInfo.value = false },
-                    title = { Text("Graph Info") },
-                    text = { Text("This graph shows the progression of your runs. The lower your time and the higher your distance the better.") },
+                    title = { Text("Graph Info", style = MaterialTheme.typography.titleSmall) },
+                    text = {
+                        Text(
+                        "This graph shows the progression of your runs. The lower your time and the higher your distance the better.",
+                            style = MaterialTheme.typography.bodySmall
+                    ) },
                     confirmButton = {
                         Button(onClick = { showInfo.value = false }) {
-                            Text("Close")
+                            Text("Close", style = MaterialTheme.typography.titleSmall)
                         }
                     }
                 )
@@ -181,9 +185,14 @@ fun History(
                             endDate
                         )
                         showDateRangeSelector.value = false
-                    }
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+
                 )
             }
+
+
 
             Row(
                 modifier = Modifier
@@ -209,7 +218,8 @@ fun History(
                                     }
                                 }
                             },
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            style = MaterialTheme.typography.bodySmall
                         )
                         // reset date range button
                         Box(
@@ -236,7 +246,7 @@ fun History(
                     TextButton(
                         onClick = { showDateRangeSelector.value = true }
                     ) {
-                        Text("Select Dates")
+                        Text("Select Dates", style = MaterialTheme.typography.titleSmall)
                     }
                 }
                 // Button to show the sort dialog
@@ -247,7 +257,7 @@ fun History(
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Sort By")
+                        Text(text = "Sort By", style = MaterialTheme.typography.titleSmall)
 
                         Spacer(modifier = Modifier.width(8.dp))
 
@@ -281,6 +291,7 @@ fun History(
                             ) {
                                 Text(
                                     text = formatDate(runs.createdAt),
+                                    style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier.weight(1f)
                                 )
                                 Card(
@@ -297,14 +308,20 @@ fun History(
                                     shape = RoundedCornerShape(8.dp),
                                     elevation = CardDefaults.cardElevation(8.dp),
                                 ) {
-                                    DeleteIcon(Modifier.size(32.dp))
+                                    DeleteIcon(Modifier.size(48.dp))
                                 }
                             }
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(text = "Duration: ${runs.durationInMillis}s")
-                            Text(text = "route LatLng size: ${runs.routePath?.size}")
+                            Text(
+                                text = "Duration: ${runs.durationInMillis}s",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = "Distance: ${runs.distance}m",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }
@@ -327,8 +344,8 @@ fun History(
         if (showDialog.value) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
-                title = { Text("Confirm Deletion") },
-                text = { Text("Are you sure you want to delete this run?") },
+                title = { Text("Confirm Deletion", style = MaterialTheme.typography.titleSmall) },
+                text = { Text("Are you sure you want to delete this run?", style = MaterialTheme.typography.bodySmall) },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -338,7 +355,7 @@ fun History(
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                         contentPadding = PaddingValues(16.dp)
                     ) {
-                        Text("Confirm")
+                        Text("Confirm", style = MaterialTheme.typography.titleSmall)
                     }
                 },
                 dismissButton = {
@@ -347,7 +364,7 @@ fun History(
                         colors = ButtonDefaults.outlinedButtonColors(),
                         contentPadding = PaddingValues(16.dp)
                     ) {
-                        Text("Cancel")
+                        Text("Cancel", style = MaterialTheme.typography.titleSmall)
                     }
                 }
             )
@@ -356,7 +373,7 @@ fun History(
         if (showSortDialog.value) {
             AlertDialog(
                 onDismissRequest = { showSortDialog.value = false },
-                title = { Text("Sort By") },
+                title = { Text("Sort By", style = MaterialTheme.typography.titleSmall) },
                 confirmButton = {
                     Column(
                         modifier = Modifier
@@ -394,7 +411,7 @@ fun History(
                                     .fillMaxWidth(),
                                 contentPadding = PaddingValues(16.dp)
                             ) {
-                                Text(option)
+                                Text(option, style = MaterialTheme.typography.bodySmall)
                             }
                             //divider after each option except the last one
                             if (index < sortingOptions.size - 1) {
@@ -412,7 +429,6 @@ fun History(
         }
     }
 }
-
 
 fun showDeleteConfirmationDialog(
     runId: Long,
