@@ -1,6 +1,7 @@
 package com.example.sbma_project.views
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -26,8 +29,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -47,7 +52,9 @@ import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.graph.RunHistoryGraph
 import com.example.sbma_project.repository.RunViewModel
+import com.example.sbma_project.uiComponents.DateRangeSelector
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -77,6 +84,39 @@ fun History(
     var selectedSortOption by remember { mutableStateOf(sortingOptions.first()) }
     val showInfo = remember { mutableStateOf(false) }
 
+    val showDateRangeSelector =
+        remember { mutableStateOf(false) } // State for showing DateRangeSelector
+
+    var selectedStartDate by remember { mutableStateOf<Date?>(null) }
+    var selectedEndDate by remember { mutableStateOf<Date?>(null) }
+
+    // Function to filter runs based on selected date range
+    fun filterRunsByDate(startDate: Date?, endDate: Date?) {
+        selectedStartDate = startDate
+        selectedEndDate = endDate
+
+        // Adjusting the time components of the selected dates
+        val adjustedStartDate = startDate?.let { adjustTimeToStartOfDay(it) }
+        val adjustedEndDate = endDate?.let { adjustTimeToEndOfDay(it) }
+
+        // filtering based on adjusted dates
+        val filteredRuns = if (adjustedStartDate != null && adjustedEndDate != null) {
+            runViewModel.runs.value?.filter { run ->
+                run.createdAt in adjustedStartDate..adjustedEndDate
+            }
+        } else {
+            runViewModel.runs.value
+        }
+        if (filteredRuns != null) {
+            runsState.value = filteredRuns
+        }
+    }
+
+    fun clearDateRange() {
+        selectedStartDate = null
+        selectedEndDate = null
+        runsState.value = runViewModel.runs.value ?: emptyList()
+    }
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
@@ -130,15 +170,79 @@ fun History(
                     }
                 )
             }
+
+            // DateRangeSelector
+            if (showDateRangeSelector.value) {
+                DateRangeSelector(
+                    onDismiss = { showDateRangeSelector.value = false },
+                    onDateRangeSelected = { startDate, endDate ->
+                        filterRunsByDate(
+                            startDate,
+                            endDate
+                        )
+                        showDateRangeSelector.value = false
+                    }
+                )
+            }
+
             Row(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                if (selectedEndDate != null && selectedStartDate != null) {
+                    // Row for the selected date range and close button
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        //selected date range
+                        Text(
+                            text = buildString {
+                                selectedStartDate?.let { startDate ->
+                                    selectedEndDate?.let { endDate ->
+                                        append(formatDateRange(startDate))
+                                        append(" - ")
+                                        append(formatDateRange(endDate))
+                                    }
+                                }
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        // reset date range button
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.secondaryContainer,
+                                    shape = CircleShape
+                                )
+                        ) {
+                            IconButton(
+                                onClick = { clearDateRange() },
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = "Clear Date Range",
+                                    )
+                            }
+                        }
+                    }
+                } else {
+                    // Text Button to show DateRangeSelector
+                    TextButton(
+                        onClick = { showDateRangeSelector.value = true }
+                    ) {
+                        Text("Select Dates")
+                    }
+                }
+                // Button to show the sort dialog
                 Button(
-                    onClick = { showSortDialog.value = true }, // Show the sort dialog
-                    modifier = Modifier.padding(top = 16.dp),
+                    onClick = { showSortDialog.value = true },
+                    modifier = Modifier.padding(start = 16.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(8.dp),
                 ) {
@@ -248,9 +352,8 @@ fun History(
                 }
             )
         }
-
+        // Sorting dialog
         if (showSortDialog.value) {
-            // Sorting dialog
             AlertDialog(
                 onDismissRequest = { showSortDialog.value = false },
                 title = { Text("Sort By") },
@@ -270,17 +373,14 @@ fun History(
                                             runsState.value =
                                                 runsState.value.sortedBy { it.createdAt }
                                         }
-
                                         "Created Date Descending" -> {
                                             runsState.value =
                                                 runsState.value.sortedByDescending { it.createdAt }
                                         }
-
                                         "Modified Date Ascending" -> {
                                             runsState.value =
                                                 runsState.value.sortedBy { it.modifiedAt }
                                         }
-
                                         "Modified Date Descending" -> {
                                             runsState.value =
                                                 runsState.value.sortedByDescending { it.modifiedAt }
@@ -329,6 +429,11 @@ fun formatDate(date: Date): String {
     return formatter.format(date)
 }
 
+fun formatDateRange(date: Date): String {
+    val formatter = SimpleDateFormat("MM/dd/yy", Locale.US)
+    return formatter.format(date)
+}
+
 
 @Composable
 fun DeleteIcon(modifier: Modifier) {
@@ -349,6 +454,28 @@ fun ratingToEmoji(rating: Int): String {
         5 -> "😄"
         else -> throw IllegalArgumentException("Invalid rating value")
     }
+}
+
+fun adjustTimeToStartOfDay(date: Date): Date {
+    val calendar = Calendar.getInstance().apply {
+        time = date
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    return calendar.time
+}
+
+fun adjustTimeToEndOfDay(date: Date): Date {
+    val calendar = Calendar.getInstance().apply {
+        time = date
+        set(Calendar.HOUR_OF_DAY, 23)
+        set(Calendar.MINUTE, 59)
+        set(Calendar.SECOND, 59)
+        set(Calendar.MILLISECOND, 999)
+    }
+    return calendar.time
 }
 
 
