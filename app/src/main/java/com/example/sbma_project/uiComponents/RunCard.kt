@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -248,6 +249,7 @@ fun RunCard(
                         Text(
                             "Save your run.",
                             textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.fillMaxWidth()
                         )
                     },
@@ -260,7 +262,7 @@ fun RunCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(text = "How do you feel after running?")
+                                Text(text = "How do you feel after running?", style = MaterialTheme.typography.bodySmall)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 // Row of emojis
                                 Row(
@@ -298,7 +300,7 @@ fun RunCard(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 // Text field for notes
-                                Text(text = "Write private notes here.")
+                                Text(text = "Write private notes here.", style = MaterialTheme.typography.bodySmall)
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 TextField(
@@ -341,7 +343,7 @@ fun RunCard(
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                             contentPadding = PaddingValues(16.dp)
                         ) {
-                            Text("Save")
+                            Text("Save", style = MaterialTheme.typography.titleSmall)
                         }
                     },
                     dismissButton = {
@@ -352,7 +354,7 @@ fun RunCard(
                             colors = ButtonDefaults.outlinedButtonColors(),
                             contentPadding = PaddingValues(16.dp)
                         ) {
-                            Text("Discard")
+                            Text("Discard", style = MaterialTheme.typography.titleSmall)
                         }
                     }
                 )

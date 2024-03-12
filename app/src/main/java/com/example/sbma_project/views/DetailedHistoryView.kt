@@ -475,7 +475,7 @@ fun DetailedHistoryView(
                                         ) {
                                             Text(
                                                 text = "Update Post Run Rating",
-                                                style = MaterialTheme.typography.headlineMedium,
+                                                style = MaterialTheme.typography.titleSmall,
                                                 modifier = Modifier.padding(bottom = 8.dp)
                                             )
                                             Spacer(modifier = Modifier.height(8.dp))
@@ -513,7 +513,7 @@ fun DetailedHistoryView(
                                         ) {
                                             Text(
                                                 text = "Edit Note",
-                                                style = MaterialTheme.typography.headlineMedium,
+                                                style = MaterialTheme.typography.titleMedium,
                                                 modifier = Modifier.padding(bottom = 8.dp)
                                             )
                                             // Text field to edit note
@@ -545,13 +545,13 @@ fun DetailedHistoryView(
                                                         MaterialTheme.colorScheme.primary
                                                     ),
                                                 ) {
-                                                    Text(text = "Cancel")
+                                                    Text(text = "Cancel", style = MaterialTheme.typography.titleSmall)
                                                 }
                                                 Button(
                                                     onClick = { onSaveNote() },
                                                     enabled = noteText != run.notes,
                                                 ) {
-                                                    Text(text = "Update Note")
+                                                    Text(text = "Update Note", style = MaterialTheme.typography.titleSmall)
                                                 }
                                             }
                                         }
@@ -564,8 +564,8 @@ fun DetailedHistoryView(
                                     onDismissRequest = {
                                         showDeleteConfirmationDialog.value = false
                                     },
-                                    title = { Text("Confirm Deletion") },
-                                    text = { Text("Are you sure you want to delete this run?") },
+                                    title = { Text("Confirm Deletion", style = MaterialTheme.typography.titleSmall) },
+                                    text = { Text("Are you sure you want to delete this run?", style = MaterialTheme.typography.bodySmall) },
                                     confirmButton = {
                                         Button(
                                             onClick = {
@@ -576,7 +576,7 @@ fun DetailedHistoryView(
                                             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                                             contentPadding = PaddingValues(16.dp)
                                         ) {
-                                            Text("Confirm")
+                                            Text("Confirm", style = MaterialTheme.typography.titleSmall)
                                         }
                                     },
                                     dismissButton = {
@@ -587,7 +587,7 @@ fun DetailedHistoryView(
                                             colors = ButtonDefaults.outlinedButtonColors(),
                                             contentPadding = PaddingValues(16.dp)
                                         ) {
-                                            Text("Cancel")
+                                            Text("Cancel", style = MaterialTheme.typography.titleSmall)
                                         }
                                     }
                                 )
@@ -599,7 +599,11 @@ fun DetailedHistoryView(
                                     .padding(12.dp),
                                 horizontalArrangement = Arrangement.End,
                             ) {
-                                Text(text = "last modified: ${formatDate(it)}")
+                                Text(
+                                    text = "last modified: ${formatDate(it)}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontStyle = FontStyle.Italic
+                                )
                             }
                         }
                         }
