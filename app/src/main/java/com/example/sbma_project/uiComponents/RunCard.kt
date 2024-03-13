@@ -1,6 +1,5 @@
 package com.example.sbma_project.uiComponents
 
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -40,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,7 +70,9 @@ fun RunCard(
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
-    var avgSpeed : Float? = 0.0F
+    var avgSpeed: Float? = 0.0F
+    val userHeight = 0.0
+
 
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
@@ -88,8 +88,6 @@ fun RunCard(
         repeat(decimals) { multiplier *= 10 }
         return kotlin.math.round(this * multiplier) / multiplier
     }
-
-
 
     Box(
         modifier = modifier,
@@ -217,7 +215,8 @@ fun RunCard(
                     contentColor = MaterialTheme.colorScheme.surface
                 )
                 //End button
-                Button(colors = stopButtonColor,
+                Button(
+                    colors = stopButtonColor,
                     onClick = {
                         Intent(context, RunningService::class.java).also {
                             it.action = RunningService.Actions.STOP.toString()
@@ -262,7 +261,10 @@ fun RunCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Text(text = "How do you feel after running?", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    text = "How do you feel after running?",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 // Row of emojis
                                 Row(
@@ -300,7 +302,10 @@ fun RunCard(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 // Text field for notes
-                                Text(text = "Write private notes here.", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    text = "Write private notes here.",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 TextField(
@@ -319,14 +324,15 @@ fun RunCard(
                                     selectedEmoji
                                 ).value
                                 if (pathPoints != null) {
-                                    val totalDistance = pathPoints?.let {
+                                    val totalDistance = pathPoints.let {
                                         DistanceCalculator.calculateTotalDistance(
                                             it
                                         )
                                     }
                                     val totalTimeInSeconds = locationViewModel.time.value
-                                    avgSpeed = calculateAverageSpeed(totalDistance ?: 0.0, totalTimeInSeconds)
-                                    val roundedAvgSpeed = String.format(Locale.US,"%.2f", avgSpeed)
+                                    avgSpeed =
+                                        calculateAverageSpeed(totalDistance, totalTimeInSeconds)
+                                    val roundedAvgSpeed = String.format(Locale.US, "%.2f", avgSpeed)
                                     runViewModel.createRun(
                                         startTime = time,
                                         routePath = pathPoints,
@@ -335,7 +341,7 @@ fun RunCard(
                                         notes = enteredText,
                                         speedTimestamps = speedTimeStampsList,
                                         avgSpeed = roundedAvgSpeed.toFloat(),
-                                        stepLength = null,
+                                        //userHeight = userHeight
                                     )
                                 }
                                 resetStateAndHideDialog()

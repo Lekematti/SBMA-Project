@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sbma_project.calculators.DistanceCalculator
 import com.example.sbma_project.calculators.StepCounter
+//import com.example.sbma_project.calculators.StepLengthCalculator
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.database.RunDao
 import com.google.android.gms.maps.model.LatLng
@@ -46,8 +47,9 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
     }
 }
 
+
 @HiltViewModel
-class RunViewModel @Inject constructor(private val runRepository: RunRepository) :
+class RunViewModel @Inject constructor(private val runRepository: RunRepository, /*private val userRepository: UserRepository*/) :
     ViewModel() {
     val runs: LiveData<List<Run>> = runRepository.getAllRuns()
 
@@ -58,14 +60,15 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         rating : Int? = null,
         notes : String? = null,
         speedTimestamps: List<Long>?,
-        avgSpeed :Float?,
-        stepLength : Double?,
+        avgSpeed :Float?
     ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
             val totalDistance = DistanceCalculator.calculateTotalDistance(routePath)
             val steps = StepCounter.saveSteps()
-            Log.d("Stats","Steps: $steps, Step Length: $stepLength, Distance: $totalDistance, Speed: $avgSpeed")
+            /*val stepLengthCalculator = StepLengthCalculator(this@RunViewModel)
+            val stepLength = stepLengthCalculator.calculateAverageStepLength()*/
+            Log.d("Stats","Steps: $steps, Step Length: $/*stepLength*/, Distance: $totalDistance, Speed: $avgSpeed")
             val newRun = Run(
                 durationInMillis = startTime,
                 routePath = routePath,
@@ -77,8 +80,8 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
                 speedTimestamps = speedTimestamps,
                 avgSpeed = avgSpeed,
                 distance = totalDistance,
-                stepLength = stepLength,
-                steps = steps,
+                stepLength = null,
+                steps = steps
             )
             viewModelScope.launch {
                 runRepository.insertRun(newRun)
@@ -86,6 +89,40 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository)
         }
     }
 
+    /*private var _showHeightDialog by mutableStateOf(false)
+    val showHeightDialog: Boolean
+        get() = _showHeightDialog
+
+    fun setShowHeightDialog(showDialog: Boolean) {
+        _showHeightDialog = showDialog
+    }
+
+
+    var onSaveHeight: ((Boolean) -> Unit)? = null
+    private var userHeight: Double = 0.0
+    init {
+        // Initialize userHeight with the stored height from the repository
+        viewModelScope.launch {
+            val storedHeight = userRepository.getUserHeight()
+            userHeight = storedHeight ?: 0.0
+        }
+    }
+    // Function to update user height
+    fun setUserHeight(height: Double) {
+        userHeight = height
+        viewModelScope.launch {
+            userRepository.updateRunUserHeight(height)
+            onSaveHeight?.invoke(true)
+        }
+    }
+
+    fun getUserHeight(): Double {
+        viewModelScope.launch {
+            val storedHeight = userRepository.getUserHeight()
+            userHeight = storedHeight ?: 0.0
+        }
+        return userHeight
+    }*/
     fun deleteRunById(runId: Long) {
         viewModelScope.launch {
             runRepository.deleteRunById(runId)

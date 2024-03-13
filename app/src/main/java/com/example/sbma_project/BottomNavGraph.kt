@@ -50,7 +50,7 @@ fun BottomNavGraph(
                 )
         }
         composable(route = BottomBarScreen.Info.route) {
-            Info()
+            Info(runViewModel)
         }
     }
 }
