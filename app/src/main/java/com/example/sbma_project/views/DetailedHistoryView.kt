@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -178,7 +177,9 @@ fun DetailedHistoryView(
                             }
                         }
                     }
-                    Box(modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically)) {
+                    Box(modifier = Modifier
+                        .wrapContentSize()
+                        .align(Alignment.CenterVertically)) {
                         Card(
                             modifier = Modifier
                                 .clickable {
@@ -200,7 +201,6 @@ fun DetailedHistoryView(
                             }
                         }
                     }
-
 
 
                 }
@@ -225,12 +225,13 @@ fun DetailedHistoryView(
                 //This holds map, duration, distance, steps, avg speed, step length, avg pace, rating, note
                 Card(
                     modifier = Modifier
+                        .fillMaxSize(1f)
                         .padding(8.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .padding(8.dp)
-                            .height(IntrinsicSize.Min)
+                            .fillMaxSize()
                     ) {
                         Row(
                             modifier = Modifier
@@ -238,7 +239,11 @@ fun DetailedHistoryView(
                                 .padding(8.dp),
                             horizontalArrangement = Arrangement.End,
                         ) {
-                            Text(text = "* Tap to edit", fontStyle = FontStyle.Italic, style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                text = "* Tap to edit",
+                                fontStyle = FontStyle.Italic,
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                         Card(
                             modifier = Modifier
@@ -344,7 +349,10 @@ fun DetailedHistoryView(
                                             settingsActionListener.openAppSettings()
                                         }
                                     ) {
-                                        Text("Open Settings", style = MaterialTheme.typography.titleSmall)
+                                        Text(
+                                            "Open Settings",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
                                     }
                                 }
                             }
@@ -352,7 +360,8 @@ fun DetailedHistoryView(
                         //card to make this section scrollable
                         Card(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .fillMaxWidth()
+                                .fillMaxHeight()
                                 .verticalScroll(rememberScrollState())
                         ) {
                             Row(
@@ -533,13 +542,19 @@ fun DetailedHistoryView(
                                                         MaterialTheme.colorScheme.primary
                                                     ),
                                                 ) {
-                                                    Text(text = "Cancel", style = MaterialTheme.typography.titleSmall)
+                                                    Text(
+                                                        text = "Cancel",
+                                                        style = MaterialTheme.typography.titleSmall
+                                                    )
                                                 }
                                                 Button(
                                                     onClick = { onSaveNote() },
                                                     enabled = noteText != run.notes,
                                                 ) {
-                                                    Text(text = "Update Note", style = MaterialTheme.typography.titleSmall)
+                                                    Text(
+                                                        text = "Update Note",
+                                                        style = MaterialTheme.typography.titleSmall
+                                                    )
                                                 }
                                             }
                                         }
@@ -552,8 +567,18 @@ fun DetailedHistoryView(
                                     onDismissRequest = {
                                         showDeleteConfirmationDialog.value = false
                                     },
-                                    title = { Text("Confirm Deletion", style = MaterialTheme.typography.titleSmall) },
-                                    text = { Text("Are you sure you want to delete this run?", style = MaterialTheme.typography.bodySmall) },
+                                    title = {
+                                        Text(
+                                            "Confirm Deletion",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                    },
+                                    text = {
+                                        Text(
+                                            "Are you sure you want to delete this run?",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    },
                                     confirmButton = {
                                         Button(
                                             onClick = {
@@ -564,7 +589,10 @@ fun DetailedHistoryView(
                                             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                                             contentPadding = PaddingValues(16.dp)
                                         ) {
-                                            Text("Confirm", style = MaterialTheme.typography.titleSmall)
+                                            Text(
+                                                "Confirm",
+                                                style = MaterialTheme.typography.titleSmall
+                                            )
                                         }
                                     },
                                     dismissButton = {
@@ -575,25 +603,28 @@ fun DetailedHistoryView(
                                             colors = ButtonDefaults.outlinedButtonColors(),
                                             contentPadding = PaddingValues(16.dp)
                                         ) {
-                                            Text("Cancel", style = MaterialTheme.typography.titleSmall)
+                                            Text(
+                                                "Cancel",
+                                                style = MaterialTheme.typography.titleSmall
+                                            )
                                         }
                                     }
                                 )
                             }
-                        run.modifiedAt?.let {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.End,
-                            ) {
-                                Text(
-                                    text = "last modified: ${formatDate(it)}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontStyle = FontStyle.Italic
-                                )
+                            run.modifiedAt?.let {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    horizontalArrangement = Arrangement.End,
+                                ) {
+                                    Text(
+                                        text = "last modified: ${formatDate(it)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontStyle = FontStyle.Italic
+                                    )
+                                }
                             }
-                        }
                         }
                     }
                 }
