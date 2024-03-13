@@ -48,8 +48,7 @@ class LocationViewModel @Inject constructor(
         _speedList.value = currentSpeedList
         _speedTimestamps.value = currentTimestamps
     }
-    var totalTimeInHours: Float = 0f
-        private set
+    private var totalTimeInHours: Float = 0f
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
@@ -128,9 +127,11 @@ class LocationViewModel @Inject constructor(
         totalTimeInHours = time.value / 3600f
         _speed.value = 0f
 
+
         val steps = StepCounter.getStepCount()
         val stepsBeforeFinish = StepCounter.saveSteps()
         Log.d("Stats", "Steps before finish: $stepsBeforeFinish, Steps: $steps")
+
 
         StepCounter.getStepCount()
         StepCounter.stop()

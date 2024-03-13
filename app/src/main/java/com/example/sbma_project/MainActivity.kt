@@ -53,7 +53,41 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
+   /* @Composable
+    fun HeightInputDialog(
+        showDialog: Boolean,
+        onHeightEntered: (Double) -> Unit
+    ) {
+        var heightText by remember { mutableStateOf(TextFieldValue()) }
 
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = {},
+                title = { Text("Enter Your Height") },
+                text = {
+                    TextField(
+                        value = heightText,
+                        onValueChange = { heightText = it },
+                        label = { Text("Height (in meters)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val height = heightText.text.toDoubleOrNull() ?: 0.0
+                        onHeightEntered(height)
+                    }) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {}) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
+    }*/
     @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +107,33 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
             )
             val viewState by locationViewModel.viewState.collectAsState()
             val isConnected = checkConnectivityStatus()
+/*
+            var userHeight by remember { mutableDoubleStateOf(0.0) }
+            var dialogState by remember { mutableStateOf(true) }
+
+            LaunchedEffect(Unit) {
+                // Check if user height is already in the database
+                val storedHeight = runViewModel.getUserHeight()
+                // If yes, use the stored user height
+                userHeight = storedHeight
+                dialogState = false
+            }
+            HeightInputDialog(
+                showDialog = dialogState,  // Use dialogState here
+                onHeightEntered = { height ->
+                    userHeight = height
+                    runViewModel.setUserHeight(userHeight)
+                    dialogState = false
+                    Log.d("Height", "User height: $userHeight")
+                }
+            )
+            runViewModel.onSaveHeight = { success ->
+                if (success) {
+                    Toast.makeText(this, "Height saved successfully", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed to save height", Toast.LENGTH_SHORT).show()
+                }
+            }*/
 
             SBMAProjectTheme {
                 Surface(
@@ -139,38 +200,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
             }
         }
     }
-
-/*    override fun onPause() {
-        super.onPause()
-        if (started) {
-            StepCounter.pause()
-            started = false
-        }
-    }
-    override fun onResume() {
-        super.onResume()
-        started = true
-        StepCounter.resume()
-        val stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-
-        if (stepSensor == null) {
-            Toast.makeText(this, "No Step Counter Sensor!", Toast.LENGTH_SHORT).show()
-        }else{
-            sensorManager?.registerListener(StepCounter, stepSensor, SensorManager.SENSOR_DELAY_NORMAL)
-        }
-    }*/
-  /*  override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // You can handle changes in sensor accuracy here if needed
-    }
-
-    override fun onSensorChanged(event: SensorEvent?) {
-      if(running){
-        totalSteps = event!!.values[0]
-          val currentSteps = totalSteps.toInt() - previousTotalSteps.toInt()
-
-      }
-    }*/
-
 
     override fun openAppSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

@@ -403,7 +403,7 @@ fun DetailedHistoryView(
                                         .weight(0.5f),
                                     icon = painterResource(id = R.drawable.footprint_24px),
                                     title = "Step Length",
-                                    description = "${run.stepLength}"
+                                    description = "${run.stepLength}cm"
                                 )
                                 DetailCardItem(
                                     modifier = Modifier
@@ -415,6 +415,17 @@ fun DetailedHistoryView(
                                 )
                             }
                             Row {
+                                run.notes?.let {
+                                    DetailCardItem(
+                                        modifier = Modifier
+                                            .clickable { showNoteEditDialog() }
+                                            .padding(10.dp)
+                                            .weight(1f),
+                                        icon = painterResource(id = R.drawable.description_24px),
+                                        title = "Notes *",
+                                        description = it
+                                    )
+                                }
                                 run.rating?.let { rating ->
                                     DetailCardItem(
                                         modifier = Modifier
@@ -434,29 +445,7 @@ fun DetailedHistoryView(
                                     title = "Feeling *",
                                     description = ""
                                 )
-                                DetailCardItem(
-                                    modifier = Modifier
-                                        .padding(10.dp)
-                                        .weight(0.5f),
-                                    icon = painterResource(id = R.drawable.steps_24px),
-                                    title = "Average Pace",
-                                    description = "${run.speedList?.size}"
-                                )
                             }
-                            Row {
-                                run.notes?.let {
-                                    DetailCardItem(
-                                        modifier = Modifier
-                                            .clickable { showNoteEditDialog() }
-                                            .padding(10.dp)
-                                            .weight(1f),
-                                        icon = painterResource(id = R.drawable.description_24px),
-                                        title = "Notes *",
-                                        description = it
-                                    )
-                                }
-                            }
-
                             //update rating dialog
                             if (showDialog.value) {
                                 Dialog(onDismissRequest = { showDialog.value = false }) {
