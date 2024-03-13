@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -31,37 +30,46 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlin.math.roundToInt
 
+@ExperimentalMaterial3Api
 @Composable
 fun RunHistoryGraph(runViewModel: RunViewModel) {
     val runsState = remember { mutableStateOf<List<Run>>(emptyList()) }
-    val displayMode = remember { mutableStateOf("distance") }
+    val displayMode = remember { mutableStateOf(DisplayMode.DISTANCE) }
+
+    val options = listOf(DisplayMode.DISTANCE.title, DisplayMode.TIME.title)
 
     LaunchedEffect(key1 = runViewModel.runs) {
         runViewModel.runs.observeForever { runs ->
             runsState.value = runs
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier.align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = {
-                    displayMode.value = if (displayMode.value == "distance") "time" else "distance"
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("Toggle between distance and time")
-            }
+            SegmentedControl(
+                items = options,
+                defaultSelectedItemIndex = displayMode.value.ordinal,
+                onItemSelection = { index ->
+                    displayMode.value = when (index) {
+                        DisplayMode.DISTANCE.ordinal -> DisplayMode.DISTANCE
+                        DisplayMode.TIME.ordinal -> DisplayMode.TIME
+                        else -> DisplayMode.DISTANCE // Default to distance if unknown
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(10.dp))
-            RunsGraph(runsState.value, displayMode)
+            RunsGraph(runsState.value, displayMode.value.title)
         }
     }
 }
 
+
 @Composable
-fun RunsGraph(runs: List<Run>, displayMode: MutableState<String>) {
-    val displayModeState = rememberUpdatedState(displayMode.value)
+fun RunsGraph(runs: List<Run>, displayMode: String) {
+    val displayModeState = rememberUpdatedState(displayMode)
 
     if (runs.isEmpty()) {
         Box(
@@ -154,7 +162,6 @@ fun setupLineChart(lineChart: LineChart, displayMode: String) {
             }
         }
     }
-
 // Set color of x and y axis labels to blue
     lineChart.xAxis.textColor = Color.Cyan.toArgb()
     lineChart.axisLeft.textColor = Color.Cyan.toArgb()
@@ -165,4 +172,10 @@ fun setupLineChart(lineChart: LineChart, displayMode: String) {
     legend.isEnabled = true
     legend.textSize = 12f
     legend.textColor = Color.Cyan.toArgb() // Set legend text color to blue
+}
+
+
+enum class DisplayMode(val title: String) {
+    DISTANCE("distance"),
+    TIME("time")
 }
