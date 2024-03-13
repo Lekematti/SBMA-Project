@@ -28,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.sbma_project.R
 import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.database.Run
@@ -58,6 +58,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun History(
     settingsActionListener: SettingsActionListener,
@@ -164,9 +165,10 @@ fun History(
                     title = { Text("Graph Info", style = MaterialTheme.typography.titleSmall) },
                     text = {
                         Text(
-                        "This graph shows the progression of your runs. The lower your time and the higher your distance the better.",
+                            "This graph shows the progression of your runs. The lower your time and the higher your distance the better.",
                             style = MaterialTheme.typography.bodySmall
-                    ) },
+                        )
+                    },
                     confirmButton = {
                         Button(onClick = { showInfo.value = false }) {
                             Text("Close", style = MaterialTheme.typography.titleSmall)
@@ -237,7 +239,7 @@ fun History(
                                 Icon(
                                     Icons.Filled.Close,
                                     contentDescription = "Clear Date Range",
-                                    )
+                                )
                             }
                         }
                     }
@@ -345,7 +347,12 @@ fun History(
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
                 title = { Text("Confirm Deletion", style = MaterialTheme.typography.titleSmall) },
-                text = { Text("Are you sure you want to delete this run?", style = MaterialTheme.typography.bodySmall) },
+                text = {
+                    Text(
+                        "Are you sure you want to delete this run?",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -390,14 +397,17 @@ fun History(
                                             runsState.value =
                                                 runsState.value.sortedBy { it.createdAt }
                                         }
+
                                         "Created Date Descending" -> {
                                             runsState.value =
                                                 runsState.value.sortedByDescending { it.createdAt }
                                         }
+
                                         "Modified Date Ascending" -> {
                                             runsState.value =
                                                 runsState.value.sortedBy { it.modifiedAt }
                                         }
+
                                         "Modified Date Descending" -> {
                                             runsState.value =
                                                 runsState.value.sortedByDescending { it.modifiedAt }
