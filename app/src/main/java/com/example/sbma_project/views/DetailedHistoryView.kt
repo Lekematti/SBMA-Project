@@ -424,17 +424,6 @@ fun DetailedHistoryView(
                                 )
                             }
                             Row {
-                                run.notes?.let {
-                                    DetailCardItem(
-                                        modifier = Modifier
-                                            .clickable { showNoteEditDialog() }
-                                            .padding(10.dp)
-                                            .weight(1f),
-                                        icon = painterResource(id = R.drawable.description_24px),
-                                        title = "Notes *",
-                                        description = it
-                                    )
-                                }
                                 run.rating?.let { rating ->
                                     DetailCardItem(
                                         modifier = Modifier
@@ -454,6 +443,19 @@ fun DetailedHistoryView(
                                     title = "Feeling *",
                                     description = ""
                                 )
+                            }
+                            Row {
+                                run.notes?.let {
+                                    DetailCardItem(
+                                        modifier = Modifier
+                                            .clickable { showNoteEditDialog() }
+                                            .padding(10.dp)
+                                            .weight(1f),
+                                        icon = painterResource(id = R.drawable.description_24px),
+                                        title = "Notes *",
+                                        description = it
+                                    )
+                                }
                             }
                             //update rating dialog
                             if (showDialog.value) {
