@@ -38,10 +38,10 @@ import com.example.sbma_project.extension.hasLocationPermission
 import com.example.sbma_project.internetConnection.ConnectionStatus
 import com.example.sbma_project.internetConnection.currentConnectivityStatus
 import com.example.sbma_project.internetConnection.observeConnectivityAsFLow
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.ui.theme.SBMAProjectTheme
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.PermissionEvent
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.example.sbma_project.viewmodels.ViewState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -253,24 +253,6 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
                     Text("OK")
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun checkConnectivityStatus(): Boolean {
-    val connection by connectivityStatus()
-    return connection != ConnectionStatus.Unavailable
-}
-@Composable
-fun connectivityStatus(): State<ConnectionStatus> {
-    val mContext = LocalContext
-        .current
-    return produceState(
-        initialValue = mContext.currentConnectivityStatus
-    ) {
-        mContext.observeConnectivityAsFLow().collect {
-            value = it
         }
     }
 }

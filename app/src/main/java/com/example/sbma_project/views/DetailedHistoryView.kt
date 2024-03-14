@@ -49,10 +49,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.sbma_project.R
 import com.example.sbma_project.SettingsActionListener
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.EmojiButton
-import com.example.sbma_project.uiComponents.emojiToRating
-import com.example.sbma_project.uiComponents.formatTime
+import com.example.sbma_project.utils.emojiToRating
+import com.example.sbma_project.utils.formatDate
+import com.example.sbma_project.utils.formatTime
+import com.example.sbma_project.utils.ratingToEmoji
+import com.example.sbma_project.utils.showDeleteConfirmationDialog
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition

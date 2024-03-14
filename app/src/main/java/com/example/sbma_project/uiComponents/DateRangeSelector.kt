@@ -22,8 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.sbma_project.views.formatDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

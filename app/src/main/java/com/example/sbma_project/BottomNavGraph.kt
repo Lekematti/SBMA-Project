@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.example.sbma_project.views.History
 import com.example.sbma_project.views.Home
 import com.example.sbma_project.views.Info

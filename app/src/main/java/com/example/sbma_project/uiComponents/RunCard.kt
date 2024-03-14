@@ -44,9 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sbma_project.R
 import com.example.sbma_project.calculators.DistanceCalculator
-import com.example.sbma_project.repository.RunViewModel
+import com.example.sbma_project.calculators.calculateAverageSpeed
 import com.example.sbma_project.services.RunningService
+import com.example.sbma_project.utils.emojiToRating
 import com.example.sbma_project.viewmodels.LocationViewModel
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
@@ -70,7 +72,7 @@ fun RunCard(
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
-    var avgSpeed: Float? = 0.0F
+    var avgSpeed: Float?
     val userHeight = 0.0
 
 
@@ -188,8 +190,6 @@ fun RunCard(
 
                             RunningState.Paused -> locationViewModel.pauseDistance()
                             RunningState.Running -> locationViewModel.resumeDistance()
-
-                            else -> {}
                         }
                     }
 
@@ -405,36 +405,6 @@ fun EmojiButton(
         contentAlignment = Alignment.Center
     ) {
         Text(emoji, fontSize = 28.sp, modifier = Modifier.align(Alignment.Center))
-    }
-}
-
-sealed class Rating(val value: Int) {
-    data object VeryBad : Rating(1)
-    data object Bad : Rating(2)
-    data object Neutral : Rating(3)
-    data object Good : Rating(4)
-    data object VeryGood : Rating(5)
-}
-
-fun emojiToRating(emoji: String): Rating {
-    return when (emoji) {
-        "😞" -> Rating.VeryBad
-        "😐" -> Rating.Bad
-        "😊" -> Rating.Neutral
-        "😃" -> Rating.Good
-        "😄" -> Rating.VeryGood
-        else -> throw IllegalArgumentException("Invalid emoji")
-    }
-
-}
-
-fun calculateAverageSpeed(totalDistanceInMeters: Double, totalTimeInSeconds: Long): Float {
-    val totalDistanceInKm = totalDistanceInMeters / 1000 // Convert total distance to kilometers
-    val totalTimeInHours = totalTimeInSeconds / 3600f // Convert total time to hours
-    return if (totalTimeInHours > 0 && totalDistanceInKm > 0) {
-        (totalDistanceInKm / totalTimeInHours).toFloat() // Calculate average speed
-    } else {
-        0f // Return 0 if either time or distance is 0
     }
 }
 
