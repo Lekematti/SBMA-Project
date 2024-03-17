@@ -38,10 +38,10 @@ import com.example.sbma_project.extension.hasLocationPermission
 import com.example.sbma_project.internetConnection.ConnectionStatus
 import com.example.sbma_project.internetConnection.currentConnectivityStatus
 import com.example.sbma_project.internetConnection.observeConnectivityAsFLow
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.ui.theme.SBMAProjectTheme
 import com.example.sbma_project.viewmodels.LocationViewModel
 import com.example.sbma_project.viewmodels.PermissionEvent
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.example.sbma_project.viewmodels.RunningState
 import com.example.sbma_project.viewmodels.ViewState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -199,7 +199,6 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 @Composable
 fun GreetingPreview() {
     SBMAProjectTheme {
-        // Replace with your preview content
         Text("Preview Content")
     }
 }
