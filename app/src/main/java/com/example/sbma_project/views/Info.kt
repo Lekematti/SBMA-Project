@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sbma_project.R
-import com.example.sbma_project.repository.RunViewModel
+import com.example.sbma_project.viewmodels.RunViewModel
 
 @Composable
 fun Info(runViewModel: RunViewModel) {
