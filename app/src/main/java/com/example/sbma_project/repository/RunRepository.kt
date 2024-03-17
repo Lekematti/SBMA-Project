@@ -34,86 +34,20 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
         return runDao.getRunById(runId)
     }
 
-    suspend fun updateRunRating(runId: Long, rating: Int) {
+    suspend fun updateRunRating(runId: Long, rating: Int){
         return runDao.updateRunRating(runId, rating)
     }
 
-    suspend fun updateRunNotes(runId: Long, notes: String?) {
+    suspend fun updateRunNotes(runId: Long, notes: String?){
         return runDao.updateRunNotes(runId, notes ?: "")
     }
 
-    suspend fun updateModifiedDate(runId: Long, newModifiedAt: Date) {
+    suspend fun updateModifiedDate(runId: Long, newModifiedAt : Date){
         return runDao.updateModifiedAt(runId, newModifiedAt)
     }
 }
 
 
-@HiltViewModel
-class RunViewModel @Inject constructor(private val runRepository: RunRepository /*private val userRepository: UserRepository*/) :
-    ViewModel() {
-    val runs: LiveData<List<Run>> = runRepository.getAllRuns()
 
-    fun createRun(
-        startTime: Long,
-        routePath: List<LatLng>,
-        speedList: List<Float>,
-        rating: Int? = null,
-        notes: String? = null,
-        speedTimestamps: List<Long>?,
-        avgSpeed: Float?
-    ) {
-        viewModelScope.launch {
-            val currentTimestamp = Date() // Get current date and time
-            val totalDistance = DistanceCalculator.calculateTotalDistance(routePath)
-            val steps = StepCounter.saveSteps()
-            Log.d("Stats", "Steps: $steps, Distance: $totalDistance, Speed: $avgSpeed")
-            val newRun = Run(
-                durationInMillis = startTime,
-                routePath = routePath,
-                createdAt = currentTimestamp,
-                modifiedAt = null,
-                rating = rating,
-                notes = notes,
-                speedList = speedList,
-                speedTimestamps = speedTimestamps,
-                avgSpeed = avgSpeed,
-                distance = totalDistance,
-                stepLength = null,
-                steps = steps
-            )
-            viewModelScope.launch {
-                runRepository.insertRun(newRun)
-            }
-        }
-    }
-
-    fun deleteRunById(runId: Long) {
-        viewModelScope.launch {
-            runRepository.deleteRunById(runId)
-        }
-    }
-
-    fun updateRunRating(runId: Long, rating: Int) {
-        viewModelScope.launch {
-            runRepository.updateRunRating(runId, rating)
-        }
-    }
-
-    fun updateRunNotes(runId: Long, notes: String?) {
-        viewModelScope.launch {
-            runRepository.updateRunNotes(runId, notes ?: "")
-        }
-    }
-
-    fun getRunById(runId: Long): LiveData<Run?> {
-        return runRepository.getRunById(runId)
-    }
-
-    fun updateModifiedDate(runId: Long, newModifiedAt: Date) {
-        viewModelScope.launch {
-            runRepository.updateModifiedDate(runId, newModifiedAt)
-        }
-    }
-}
 
 

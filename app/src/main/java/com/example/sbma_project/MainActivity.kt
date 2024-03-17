@@ -195,25 +195,6 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     }
 }
 
-@Composable
-fun checkConnectivityStatus(): Boolean {
-    val connection by connectivityStatus()
-    return connection != ConnectionStatus.Unavailable
-}
-
-@Composable
-fun connectivityStatus(): State<ConnectionStatus> {
-    val mContext = LocalContext
-        .current
-    return produceState(
-        initialValue = mContext.currentConnectivityStatus
-    ) {
-        mContext.observeConnectivityAsFLow().collect {
-            value = it
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {

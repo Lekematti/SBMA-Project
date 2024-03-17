@@ -36,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,12 +50,14 @@ import com.example.sbma_project.R
 import com.example.sbma_project.SettingsActionListener
 import com.example.sbma_project.database.Run
 import com.example.sbma_project.graph.RunHistoryGraph
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.DateRangeSelector
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import com.example.sbma_project.utils.adjustTimeToEndOfDay
+import com.example.sbma_project.utils.adjustTimeToStartOfDay
+import com.example.sbma_project.utils.formatDate
+import com.example.sbma_project.utils.formatDateRange
+import com.example.sbma_project.utils.showDeleteConfirmationDialog
+import com.example.sbma_project.viewmodels.RunViewModel
 import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -437,25 +438,6 @@ fun History(
     }
 }
 
-fun showDeleteConfirmationDialog(
-    runId: Long,
-    runIdToDelete: MutableState<Long>,
-    showDialog: MutableState<Boolean>
-) {
-    runIdToDelete.value = runId
-    showDialog.value = true
-}
-
-fun formatDate(date: Date): String {
-    val formatter = SimpleDateFormat("MMMM d, yyyy 'at' HH:mm:ss", Locale.US)
-    return formatter.format(date)
-}
-
-fun formatDateRange(date: Date): String {
-    val formatter = SimpleDateFormat("MM/dd/yy", Locale.US)
-    return formatter.format(date)
-}
-
 @Composable
 fun DeleteIcon(modifier: Modifier) {
     Icon(
@@ -464,39 +446,6 @@ fun DeleteIcon(modifier: Modifier) {
         tint = Color.Red,
         modifier = modifier
     )
-}
-
-fun ratingToEmoji(rating: Int): String {
-    return when (rating) {
-        1 -> "😞"
-        2 -> "😐"
-        3 -> "😊"
-        4 -> "😃"
-        5 -> "😄"
-        else -> throw IllegalArgumentException("Invalid rating value")
-    }
-}
-
-fun adjustTimeToStartOfDay(date: Date): Date {
-    val calendar = Calendar.getInstance().apply {
-        time = date
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
-    return calendar.time
-}
-
-fun adjustTimeToEndOfDay(date: Date): Date {
-    val calendar = Calendar.getInstance().apply {
-        time = date
-        set(Calendar.HOUR_OF_DAY, 23)
-        set(Calendar.MINUTE, 59)
-        set(Calendar.SECOND, 59)
-        set(Calendar.MILLISECOND, 999)
-    }
-    return calendar.time
 }
 
 

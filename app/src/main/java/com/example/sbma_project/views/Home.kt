@@ -27,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.sbma_project.SettingsActionListener
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.uiComponents.RunCard
 import com.example.sbma_project.viewmodels.LocationViewModel
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState

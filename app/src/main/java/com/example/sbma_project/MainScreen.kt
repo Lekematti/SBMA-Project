@@ -19,8 +19,8 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.sbma_project.repository.RunViewModel
 import com.example.sbma_project.viewmodels.LocationViewModel
+import com.example.sbma_project.viewmodels.RunViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 
