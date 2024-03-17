@@ -132,8 +132,6 @@ fun Home(
         } else {
             NoInternetScreen()
         }
-
-
     }
 }
 

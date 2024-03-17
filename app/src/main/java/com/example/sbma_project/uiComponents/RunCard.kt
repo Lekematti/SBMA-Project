@@ -73,8 +73,6 @@ fun RunCard(
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
     var avgSpeed: Float?
-    val userHeight = 0.0
-
 
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
@@ -172,7 +170,7 @@ fun RunCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f), // Equal weight for each row
+                    .weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -341,7 +339,6 @@ fun RunCard(
                                         notes = enteredText,
                                         speedTimestamps = speedTimeStampsList,
                                         avgSpeed = roundedAvgSpeed.toFloat(),
-                                        //userHeight = userHeight
                                     )
                                 }
                                 resetStateAndHideDialog()
@@ -365,7 +362,6 @@ fun RunCard(
                     }
                 )
             }
-
         }
         LaunchedEffect(locationViewModel.runningState == RunningState.Running) {
             while (locationViewModel.runningState == RunningState.Running) {

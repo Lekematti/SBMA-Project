@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
+// Works but not used in the project
 class FitApiHelper(private val activity: Activity) {
 
     private val fitnessOptions = FitnessOptions.builder()

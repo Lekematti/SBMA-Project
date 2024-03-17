@@ -50,44 +50,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SettingsActionListener {
-   /* @Composable
-    fun HeightInputDialog(
-        showDialog: Boolean,
-        onHeightEntered: (Double) -> Unit
-    ) {
-        var heightText by remember { mutableStateOf(TextFieldValue()) }
-
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = {},
-                title = { Text("Enter Your Height") },
-                text = {
-                    TextField(
-                        value = heightText,
-                        onValueChange = { heightText = it },
-                        label = { Text("Height (in meters)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        val height = heightText.text.toDoubleOrNull() ?: 0.0
-                        onHeightEntered(height)
-                    }) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = {}) {
-                        Text("Cancel")
-                    }
-                }
-            )
-        }
-    }*/
     @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,33 +71,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
             )
             val viewState by locationViewModel.viewState.collectAsState()
             val isConnected = checkConnectivityStatus()
-/*
-            var userHeight by remember { mutableDoubleStateOf(0.0) }
-            var dialogState by remember { mutableStateOf(true) }
-
-            LaunchedEffect(Unit) {
-                // Check if user height is already in the database
-                val storedHeight = runViewModel.getUserHeight()
-                // If yes, use the stored user height
-                userHeight = storedHeight
-                dialogState = false
-            }
-            HeightInputDialog(
-                showDialog = dialogState,  // Use dialogState here
-                onHeightEntered = { height ->
-                    userHeight = height
-                    runViewModel.setUserHeight(userHeight)
-                    dialogState = false
-                    Log.d("Height", "User height: $userHeight")
-                }
-            )
-            runViewModel.onSaveHeight = { success ->
-                if (success) {
-                    Toast.makeText(this, "Height saved successfully", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Failed to save height", Toast.LENGTH_SHORT).show()
-                }
-            }*/
 
             SBMAProjectTheme {
                 Surface(
@@ -191,7 +128,6 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-
                                 )
                             }
                         }

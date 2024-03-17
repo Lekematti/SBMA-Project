@@ -15,7 +15,6 @@ object StepCounter : SensorEventListener {
     private var savedSteps = 0
     private var isInitialized = false
 
-
     fun start(context: Context) {
         if (!isInitialized) {
             sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -63,7 +62,6 @@ object StepCounter : SensorEventListener {
             stepCountSensor,
             SensorManager.SENSOR_DELAY_NORMAL
         )
-
     }
 
     fun stop() {

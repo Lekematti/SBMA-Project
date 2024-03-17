@@ -29,5 +29,4 @@ interface RunDao {
 
     @Query("UPDATE runs SET modifiedAt = :newModifiedAt WHERE id = :runId")
     suspend fun updateModifiedAt(runId: Long, newModifiedAt : Date)
-
 }

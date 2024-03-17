@@ -191,11 +191,8 @@ fun History(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-
                 )
             }
-
-
 
             Row(
                 modifier = Modifier

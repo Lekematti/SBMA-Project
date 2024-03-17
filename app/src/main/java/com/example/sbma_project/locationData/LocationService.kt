@@ -41,7 +41,7 @@ class LocationService @Inject constructor(
                 val speed = location?.speed // Speed in meters/second
 
                 val locationWithSpeed =
-                    speed?.let { it ->
+                    speed?.let {
                         LocationWithSpeed(
                             LatLng(location.latitude, location.longitude),
                             it
@@ -65,7 +65,6 @@ class LocationService @Inject constructor(
     override fun requestCurrentLocation(): Flow<LocationWithSpeed?> {
         TODO("Not yet implemented")
     }
-
 }
 
 data class LocationWithSpeed(val location: LatLng?, val speed: Float)

@@ -115,7 +115,7 @@ fun getLineData(runs: List<Run>, displayMode: String): LineData {
     }.filterNotNull()
     val dataSet = LineDataSet(values, "Runs")
     dataSet.color = Color.Blue.toArgb()
-    dataSet.valueTextColor = Color.Green.toArgb() // Id color
+    dataSet.valueTextColor = Color.Green.toArgb()
 
     // Customize the appearance of data points
     dataSet.setDrawCircles(true)
@@ -162,7 +162,7 @@ fun setupLineChart(lineChart: LineChart, displayMode: String) {
             }
         }
     }
-// Set color of x and y axis labels to blue
+    // Set color of x and y axis labels to blue
     lineChart.xAxis.textColor = Color.Cyan.toArgb()
     lineChart.axisLeft.textColor = Color.Cyan.toArgb()
     lineChart.axisRight.textColor = Color.Cyan.toArgb()
@@ -171,9 +171,8 @@ fun setupLineChart(lineChart: LineChart, displayMode: String) {
     val legend: Legend = lineChart.legend
     legend.isEnabled = true
     legend.textSize = 12f
-    legend.textColor = Color.Cyan.toArgb() // Set legend text color to blue
+    legend.textColor = Color.Cyan.toArgb()
 }
-
 
 enum class DisplayMode(val title: String) {
     DISTANCE("distance"),
