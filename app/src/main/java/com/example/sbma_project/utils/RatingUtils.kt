@@ -8,7 +8,7 @@ sealed class Rating(val value: Int) {
     data object VeryGood : Rating(5)
 }
 
-fun emojiToRating(emoji: String): Any {
+fun emojiToRating(emoji: String): Rating {
     return when (emoji) {
         "😞" -> Rating.VeryBad
         "😐" -> Rating.Bad
