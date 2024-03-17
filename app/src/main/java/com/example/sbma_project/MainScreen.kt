@@ -36,7 +36,6 @@ fun MainScreen(
     isConnected: Boolean,
     locationViewModel: LocationViewModel,
     runViewModel: RunViewModel,
-
     ) {
     val navController = rememberNavController()
     Scaffold(

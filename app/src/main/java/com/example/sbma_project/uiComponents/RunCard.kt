@@ -52,7 +52,6 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import java.util.Locale
 
-
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun RunCard(
@@ -70,9 +69,7 @@ fun RunCard(
     val stopButtonEnabled by locationViewModel.stopButtonEnabled.collectAsState()
     var enteredText by remember { mutableStateOf("") }
     val context = LocalContext.current
-    var avgSpeed: Float? = 0.0F
-    val userHeight = 0.0
-
+    var avgSpeed: Float?
 
     fun resetStateAndHideDialog() {
         selectedEmoji = ""
@@ -188,8 +185,6 @@ fun RunCard(
 
                             RunningState.Paused -> locationViewModel.pauseDistance()
                             RunningState.Running -> locationViewModel.resumeDistance()
-
-                            else -> {}
                         }
                     }
 
@@ -341,7 +336,6 @@ fun RunCard(
                                         notes = enteredText,
                                         speedTimestamps = speedTimeStampsList,
                                         avgSpeed = roundedAvgSpeed.toFloat(),
-                                        //userHeight = userHeight
                                     )
                                 }
                                 resetStateAndHideDialog()

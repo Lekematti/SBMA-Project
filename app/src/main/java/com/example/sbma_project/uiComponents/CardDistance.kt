@@ -24,9 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun CardDistance(modifier: Modifier, pathPoints: List<LatLng>?) {
-
     var distanceText by remember { mutableStateOf("Calculating distance...") }
-
 
     if (pathPoints != null) {
         val totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints)

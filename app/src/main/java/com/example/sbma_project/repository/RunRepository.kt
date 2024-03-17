@@ -34,22 +34,22 @@ class RunRepository @Inject constructor(private val runDao: RunDao) {
         return runDao.getRunById(runId)
     }
 
-    suspend fun updateRunRating(runId: Long, rating: Int){
+    suspend fun updateRunRating(runId: Long, rating: Int) {
         return runDao.updateRunRating(runId, rating)
     }
 
-    suspend fun updateRunNotes(runId: Long, notes: String?){
+    suspend fun updateRunNotes(runId: Long, notes: String?) {
         return runDao.updateRunNotes(runId, notes ?: "")
     }
 
-    suspend fun updateModifiedDate(runId: Long, newModifiedAt : Date){
+    suspend fun updateModifiedDate(runId: Long, newModifiedAt: Date) {
         return runDao.updateModifiedAt(runId, newModifiedAt)
     }
 }
 
 
 @HiltViewModel
-class RunViewModel @Inject constructor(private val runRepository: RunRepository, /*private val userRepository: UserRepository*/) :
+class RunViewModel @Inject constructor(private val runRepository: RunRepository /*private val userRepository: UserRepository*/) :
     ViewModel() {
     val runs: LiveData<List<Run>> = runRepository.getAllRuns()
 
@@ -57,18 +57,16 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository,
         startTime: Long,
         routePath: List<LatLng>,
         speedList: List<Float>,
-        rating : Int? = null,
-        notes : String? = null,
+        rating: Int? = null,
+        notes: String? = null,
         speedTimestamps: List<Long>?,
-        avgSpeed :Float?
+        avgSpeed: Float?
     ) {
         viewModelScope.launch {
             val currentTimestamp = Date() // Get current date and time
             val totalDistance = DistanceCalculator.calculateTotalDistance(routePath)
             val steps = StepCounter.saveSteps()
-            /*val stepLengthCalculator = StepLengthCalculator(this@RunViewModel)
-            val stepLength = stepLengthCalculator.calculateAverageStepLength()*/
-            Log.d("Stats","Steps: $steps, Step Length: $/*stepLength*/, Distance: $totalDistance, Speed: $avgSpeed")
+            Log.d("Stats", "Steps: $steps, Distance: $totalDistance, Speed: $avgSpeed")
             val newRun = Run(
                 durationInMillis = startTime,
                 routePath = routePath,
@@ -89,53 +87,19 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository,
         }
     }
 
-    /*private var _showHeightDialog by mutableStateOf(false)
-    val showHeightDialog: Boolean
-        get() = _showHeightDialog
-
-    fun setShowHeightDialog(showDialog: Boolean) {
-        _showHeightDialog = showDialog
-    }
-
-
-    var onSaveHeight: ((Boolean) -> Unit)? = null
-    private var userHeight: Double = 0.0
-    init {
-        // Initialize userHeight with the stored height from the repository
-        viewModelScope.launch {
-            val storedHeight = userRepository.getUserHeight()
-            userHeight = storedHeight ?: 0.0
-        }
-    }
-    // Function to update user height
-    fun setUserHeight(height: Double) {
-        userHeight = height
-        viewModelScope.launch {
-            userRepository.updateRunUserHeight(height)
-            onSaveHeight?.invoke(true)
-        }
-    }
-
-    fun getUserHeight(): Double {
-        viewModelScope.launch {
-            val storedHeight = userRepository.getUserHeight()
-            userHeight = storedHeight ?: 0.0
-        }
-        return userHeight
-    }*/
     fun deleteRunById(runId: Long) {
         viewModelScope.launch {
             runRepository.deleteRunById(runId)
         }
     }
 
-     fun updateRunRating(runId: Long, rating: Int){
-         viewModelScope.launch {
-             runRepository.updateRunRating(runId, rating)
-         }
+    fun updateRunRating(runId: Long, rating: Int) {
+        viewModelScope.launch {
+            runRepository.updateRunRating(runId, rating)
+        }
     }
 
-    fun updateRunNotes(runId: Long, notes: String?){
+    fun updateRunNotes(runId: Long, notes: String?) {
         viewModelScope.launch {
             runRepository.updateRunNotes(runId, notes ?: "")
         }
@@ -145,7 +109,7 @@ class RunViewModel @Inject constructor(private val runRepository: RunRepository,
         return runRepository.getRunById(runId)
     }
 
-    fun updateModifiedDate(runId: Long, newModifiedAt: Date){
+    fun updateModifiedDate(runId: Long, newModifiedAt: Date) {
         viewModelScope.launch {
             runRepository.updateModifiedDate(runId, newModifiedAt)
         }

@@ -1,6 +1,5 @@
 package com.example.sbma_project.views
 
-//import com.example.sbma_project.viewmodels.DistanceViewModel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -65,8 +64,7 @@ fun Home(
                 ) {
                     CircularProgressIndicator()
                 }
-            }
-            else if (locationPermissionState == "success") {
+            } else if (locationPermissionState == "success") {
                 if (isFirstTime) { // If it's the first time, zoom to 15f
                     LaunchedEffect(key1 = currentPosition) {
                         if (currentPosition != null) {
@@ -100,7 +98,7 @@ fun Home(
                             locationViewModel = locationViewModel,
                             runViewModel = runViewModel,
                             pathPoints = pathPoints,
-                            )
+                        )
                     }
                 }
             } else {
@@ -133,8 +131,6 @@ fun Home(
         } else {
             NoInternetScreen()
         }
-
-
     }
 }
 

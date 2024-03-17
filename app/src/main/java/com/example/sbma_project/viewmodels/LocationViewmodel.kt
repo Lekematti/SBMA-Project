@@ -20,13 +20,12 @@ import java.math.RoundingMode
 import javax.inject.Inject
 
 
-
 @RequiresApi(Build.VERSION_CODES.S)
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val getLocationUseCase: GetLocationUseCase,
     @SuppressLint("StaticFieldLeak") private val context: Context
-) : ViewModel(){
+) : ViewModel() {
 
 
     //MutableStateFlow to hold the list of speeds
@@ -48,6 +47,7 @@ class LocationViewModel @Inject constructor(
         _speedList.value = currentSpeedList
         _speedTimestamps.value = currentTimestamps
     }
+
     private var totalTimeInHours: Float = 0f
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
@@ -61,9 +61,8 @@ class LocationViewModel @Inject constructor(
     val pathPoints = _pathPoints.asStateFlow()
 
     //DISTANCE
-    // Variable to keep the total distance that can be observed from UI
     private var totalDistance = 0.0
-    private var isDistanceUpdateEnabled = true // Flag to control distance updates
+    private var isDistanceUpdateEnabled = true
 
     private fun calculateDistance() {
         totalDistance = DistanceCalculator.calculateTotalDistance(pathPoints.value)
@@ -83,14 +82,13 @@ class LocationViewModel @Inject constructor(
         _pathPoints.value = emptyList()
     }
 
-    // Modify the existing updateDistance method to call calculateDistance
     private fun updateDistance() {
         if (isDistanceUpdateEnabled) {
             calculateDistance()
         }
     }
 
-    var runningState : RunningState = RunningState.Stopped
+    var runningState: RunningState = RunningState.Stopped
         private set
 
     // Function to start the run
@@ -99,7 +97,7 @@ class LocationViewModel @Inject constructor(
         _stopButtonEnabled.value = true
         startLocationUpdates()
         StepCounter.start(context)
-        StepCounter.resetSavedSteps() // Reset saved steps for a new run
+        StepCounter.resetSavedSteps()
     }
 
 
@@ -127,17 +125,15 @@ class LocationViewModel @Inject constructor(
         totalTimeInHours = time.value / 3600f
         _speed.value = 0f
 
-
         val steps = StepCounter.getStepCount()
         val stepsBeforeFinish = StepCounter.saveSteps()
         Log.d("Stats", "Steps before finish: $stepsBeforeFinish, Steps: $steps")
-
 
         StepCounter.getStepCount()
         StepCounter.stop()
     }
 
-    fun resetPathPoints(){
+    fun resetPathPoints() {
         _pathPoints.value = emptyList()
 
     }
@@ -160,7 +156,8 @@ class LocationViewModel @Inject constructor(
                 // If the user is currently running, update pathPoints with new location
                 if (runningState == RunningState.Running) {
                     if (locationWithSpeed != null) {
-                        _pathPoints.value = _pathPoints.value + (locationWithSpeed.location ?: LatLng(0.00, 0.00))
+                        _pathPoints.value =
+                            _pathPoints.value + (locationWithSpeed.location ?: LatLng(0.00, 0.00))
                         Log.d("locationSpeed", "${locationWithSpeed.location}")
                         val speed = (locationWithSpeed.speed * 3.6f).toBigDecimal()
                             .setScale(2, RoundingMode.HALF_UP).toFloat()
@@ -185,6 +182,7 @@ class LocationViewModel @Inject constructor(
         runningState = RunningState.Stopped
         _stopButtonEnabled.value = false
     }
+
     fun updateTime(newTime: Long) {
         _time.value = newTime
     }
@@ -194,6 +192,7 @@ class LocationViewModel @Inject constructor(
             PermissionEvent.Granted -> {
                 startLocationUpdates()
             }
+
             PermissionEvent.Revoked -> {
                 _viewState.value = ViewState.RevokedPermissions
             }

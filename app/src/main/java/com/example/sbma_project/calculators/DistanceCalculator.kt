@@ -26,7 +26,6 @@ object DistanceCalculator {
                 totalDistance += startLocation.distanceTo(endLocation).toDouble()
             }
         }
-
         // Format to keep only one decimal place
         return String.format("%.1f", totalDistance).replace(',', '.').toDouble()
     }

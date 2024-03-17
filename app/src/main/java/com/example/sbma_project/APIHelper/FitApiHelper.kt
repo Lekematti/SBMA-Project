@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
+//Unused class (Works, makes a request to Google Fit API, but not used in the project)
 class FitApiHelper(private val activity: Activity) {
 
     private val fitnessOptions = FitnessOptions.builder()
@@ -26,7 +27,7 @@ class FitApiHelper(private val activity: Activity) {
         GoogleSignIn.getAccountForExtension(activity, fitnessOptions)
     }
 
-    private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1 // You need to define this
+    private val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1
 
     init {
         checkAndRequestPermissions()

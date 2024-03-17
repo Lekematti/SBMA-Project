@@ -17,16 +17,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.sbma_project.viewmodels.LocationViewModel
-import kotlin.math.roundToInt
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun CardSpeed(modifier: Modifier, locationViewModel: LocationViewModel) {
     val speed by locationViewModel.speed.collectAsState(initial = 0f)
+
     Box(
         modifier = modifier
     ) {

@@ -177,9 +177,11 @@ fun DetailedHistoryView(
                             }
                         }
                     }
-                    Box(modifier = Modifier
-                        .wrapContentSize()
-                        .align(Alignment.CenterVertically)) {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .align(Alignment.CenterVertically)
+                    ) {
                         Card(
                             modifier = Modifier
                                 .clickable {
@@ -222,7 +224,7 @@ fun DetailedHistoryView(
                     )
                 }
 
-                //This holds map, duration, distance, steps, avg speed, step length, avg pace, rating, note
+                //This holds map, duration, distance, steps, avg speed, rating, note
                 Card(
                     modifier = Modifier
                         .fillMaxSize(1f)
@@ -401,29 +403,22 @@ fun DetailedHistoryView(
                                         .padding(10.dp)
                                         .weight(0.5f),
                                     icon = painterResource(id = R.drawable.speed_24px),
-                                    title = "Average Speed",
+                                    title = "Avg Speed",
                                     description = "${run.avgSpeed}km/hr"
                                 )
                             }
                             Row {
-                                DetailCardItem(
-                                    modifier = Modifier
-                                        .padding(10.dp)
-                                        .weight(0.5f),
-                                    icon = painterResource(id = R.drawable.footprint_24px),
-                                    title = "Step Length",
-                                    description = "${run.stepLength}cm"
-                                )
-                                DetailCardItem(
-                                    modifier = Modifier
-                                        .padding(10.dp)
-                                        .weight(0.5f),
-                                    icon = painterResource(id = R.drawable.steps_24px),
-                                    title = "Average Pace",
-                                    description = "${run.speedTimestamps?.size}"
-                                )
-                            }
-                            Row {
+                                run.notes?.let {
+                                    DetailCardItem(
+                                        modifier = Modifier
+                                            .clickable { showNoteEditDialog() }
+                                            .padding(10.dp)
+                                            .weight(0.5f),
+                                        icon = painterResource(id = R.drawable.description_24px),
+                                        title = "Notes *",
+                                        description = it
+                                    )
+                                }
                                 run.rating?.let { rating ->
                                     DetailCardItem(
                                         modifier = Modifier
@@ -443,19 +438,6 @@ fun DetailedHistoryView(
                                     title = "Feeling *",
                                     description = ""
                                 )
-                            }
-                            Row {
-                                run.notes?.let {
-                                    DetailCardItem(
-                                        modifier = Modifier
-                                            .clickable { showNoteEditDialog() }
-                                            .padding(10.dp)
-                                            .weight(1f),
-                                        icon = painterResource(id = R.drawable.description_24px),
-                                        title = "Notes *",
-                                        description = it
-                                    )
-                                }
                             }
                             //update rating dialog
                             if (showDialog.value) {

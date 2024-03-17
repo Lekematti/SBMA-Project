@@ -59,30 +59,7 @@ interface RunDao {
 
     @Query("UPDATE runs SET modifiedAt = :newModifiedAt WHERE id = :runId")
     suspend fun updateModifiedAt(runId: Long, newModifiedAt :Date)
-
 }
-//@Entity(tableName = "user")
-//data class User(
-//    @PrimaryKey(autoGenerate = true)
-//    val id: Long = 0,
-//    val userHeight: Double?
-//)
-//
-//@Dao
-//interface UserDao {
-//    @Insert
-//    suspend fun insertUser(user: User)
-//
-//    @Query("SELECT * FROM user WHERE id = :userId")
-//    suspend fun getUserById(userId: Long): User?
-//
-//    @Query("UPDATE user SET userHeight = :height")
-//    suspend fun updateRunUserHeight(height: Double)
-//
-//    @Query("SELECT userHeight FROM user LIMIT 1")
-//    suspend fun getUserHeight(): Double?
-//}
-
 
 object Converters {
     @TypeConverter

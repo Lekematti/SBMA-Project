@@ -190,11 +190,8 @@ fun History(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-
                 )
             }
-
-
 
             Row(
                 modifier = Modifier
@@ -449,7 +446,6 @@ fun showDeleteConfirmationDialog(
     showDialog.value = true
 }
 
-
 fun formatDate(date: Date): String {
     val formatter = SimpleDateFormat("MMMM d, yyyy 'at' HH:mm:ss", Locale.US)
     return formatter.format(date)
@@ -459,7 +455,6 @@ fun formatDateRange(date: Date): String {
     val formatter = SimpleDateFormat("MM/dd/yy", Locale.US)
     return formatter.format(date)
 }
-
 
 @Composable
 fun DeleteIcon(modifier: Modifier) {

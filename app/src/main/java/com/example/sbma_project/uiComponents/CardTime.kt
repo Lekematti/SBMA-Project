@@ -28,7 +28,6 @@ fun CardTime(modifier: Modifier, locationViewModel: LocationViewModel) {
 
     Box(
         modifier = modifier
-
     ) {
         Column(
             modifier = Modifier

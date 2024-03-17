@@ -1,6 +1,5 @@
 package com.example.sbma_project.uiComponents
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,12 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.sbma_project.views.formatDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +33,7 @@ fun DateRangeSelector(
     modifier: Modifier
 ) {
     val state = rememberDateRangePickerState()
+
     Column(
         modifier = modifier
     ) {

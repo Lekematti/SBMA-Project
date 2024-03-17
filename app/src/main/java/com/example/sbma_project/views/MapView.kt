@@ -2,11 +2,9 @@ package com.example.sbma_project.views
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -49,8 +47,6 @@ fun MapView(modifier: Modifier) {
             )
         }
     }
-
-
 }
 
 private suspend fun CameraPositionState.centerOnLocation(
