@@ -84,11 +84,13 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                         permissionState.allPermissionsGranted -> {
                             locationViewModel.handle(PermissionEvent.Granted)
                         }
+
                         permissionState.shouldShowRationale -> {
                             RationaleAlert(onDismiss = {}) {
                                 permissionState.launchMultiplePermissionRequest()
                             }
                         }
+
                         else -> {
                             locationViewModel.handle(PermissionEvent.Revoked)
                         }
@@ -102,9 +104,9 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-
-                                )
+                                    )
                             }
+
                             ViewState.RevokedPermissions -> {
                                 MainScreen(
                                     "revoked",
@@ -112,9 +114,9 @@ class MainActivity : ComponentActivity(), SettingsActionListener {
                                     isConnected = isConnected,
                                     locationViewModel = locationViewModel,
                                     runViewModel = runViewModel,
-
-                                )
+                                    )
                             }
+
                             is ViewState.Success -> {
                                 MainScreen(
                                     "success",
@@ -197,7 +199,6 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 @Composable
 fun GreetingPreview() {
     SBMAProjectTheme {
-        // Replace with your preview content
         Text("Preview Content")
     }
 }

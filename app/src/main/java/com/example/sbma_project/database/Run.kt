@@ -29,3 +29,4 @@ data class Run(
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     var modifiedAt: Date?,
 )
+

@@ -54,7 +54,6 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import java.util.Locale
 
-
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun RunCard(

@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import java.math.RoundingMode
 import javax.inject.Inject
 
+
 @RequiresApi(Build.VERSION_CODES.S)
 @HiltViewModel
 class LocationViewModel @Inject constructor(
@@ -81,7 +82,6 @@ class LocationViewModel @Inject constructor(
         _pathPoints.value = emptyList()
     }
 
-    // Modify the existing updateDistance method to call calculateDistance
     private fun updateDistance() {
         if (isDistanceUpdateEnabled) {
             calculateDistance()
@@ -134,7 +134,6 @@ class LocationViewModel @Inject constructor(
 
     fun resetPathPoints() {
         _pathPoints.value = emptyList()
-
     }
 
     private var locationJob: Job? = null

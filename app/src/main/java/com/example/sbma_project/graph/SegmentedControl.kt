@@ -29,8 +29,8 @@ fun SegmentedControl(
     defaultSelectedItemIndex: Int = 0,
     useFixedWidth: Boolean = false,
     itemWidth: Dp = 120.dp,
-    cornerRadius : Int = 50,
-    @ColorRes color : Color = MaterialTheme.colorScheme.primary,
+    cornerRadius: Int = 50,
+    @ColorRes color: Color = MaterialTheme.colorScheme.primary,
     onItemSelection: (selectedItemIndex: Int) -> Unit,
 ) {
     val selectedIndex = remember { mutableIntStateOf(defaultSelectedItemIndex) }
@@ -53,7 +53,9 @@ fun SegmentedControl(
                                 .offset(0.dp, 0.dp)
                                 .zIndex(if (selectedIndex.intValue == index) 1f else 0f)
                         }
-                    } else -> {
+                    }
+
+                    else -> {
                         if (useFixedWidth)
                             Modifier
                                 .width(itemWidth)

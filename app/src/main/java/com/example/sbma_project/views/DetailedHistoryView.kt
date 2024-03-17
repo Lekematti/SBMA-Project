@@ -404,7 +404,7 @@ fun DetailedHistoryView(
                                         .padding(10.dp)
                                         .weight(0.5f),
                                     icon = painterResource(id = R.drawable.speed_24px),
-                                    title = "Average Speed",
+                                    title = "Avg Speed",
                                     description = "${run.avgSpeed}km/hr"
                                 )
                             }

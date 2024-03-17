@@ -56,7 +56,7 @@ fun RunHistoryGraph(runViewModel: RunViewModel) {
                     displayMode.value = when (index) {
                         DisplayMode.DISTANCE.ordinal -> DisplayMode.DISTANCE
                         DisplayMode.TIME.ordinal -> DisplayMode.TIME
-                        else -> DisplayMode.DISTANCE // Default to distance if unknown
+                        else -> DisplayMode.DISTANCE
                     }
                 }
             )
@@ -93,7 +93,7 @@ fun RunsGraph(runs: List<Run>, displayMode: String) {
                 update = { lineChart ->
                     setupLineChart(lineChart, displayModeState.value)
                     lineChart.data = getLineData(runs, displayModeState.value)
-                    lineChart.invalidate() // Redraw the chart
+                    lineChart.invalidate()
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -109,6 +109,7 @@ fun getLineData(runs: List<Run>, displayMode: String): LineData {
             "distance" -> run.distance?.let {
                 Entry(index.toFloat(), it.toFloat(), run.id)
             }
+
             "time" -> Entry(index.toFloat(), run.durationInMillis.toFloat(), run.id)
             else -> null
         }
@@ -130,6 +131,7 @@ fun getLineData(runs: List<Run>, displayMode: String): LineData {
     }
     return LineData(dataSet)
 }
+
 fun setupLineChart(lineChart: LineChart, displayMode: String) {
 
     // Customize the chart appearance
@@ -147,10 +149,10 @@ fun setupLineChart(lineChart: LineChart, displayMode: String) {
     lineChart.axisRight.isEnabled = false
 
     // Set minimum and maximum values for y-axis (distance)
-    lineChart.axisLeft.axisMinimum = 0f // your minimum value
+    lineChart.axisLeft.axisMinimum = 0f
 
     // Set minimum and maximum values for x-axis (time)
-    lineChart.xAxis.axisMinimum = 0f // your minimum value
+    lineChart.xAxis.axisMinimum = 0f
 
     // Set y axis value formatter to display distance in meters or time in seconds
     lineChart.axisLeft.valueFormatter = object : ValueFormatter() {

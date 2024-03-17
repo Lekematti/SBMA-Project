@@ -438,7 +438,6 @@ fun History(
     }
 }
 
-
 @Composable
 fun DeleteIcon(modifier: Modifier) {
     Icon(
@@ -448,8 +447,6 @@ fun DeleteIcon(modifier: Modifier) {
         modifier = modifier
     )
 }
-
-
 
 
 
